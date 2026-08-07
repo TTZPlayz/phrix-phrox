@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:blasting",
+  "experience": 0.25,
+  "group": "lead",
+  "ingredient": "phrixphrox:pipe_remnant",
+  "result": {
+    "id": "phrixphrox:lead_scrap"
+  }
+}

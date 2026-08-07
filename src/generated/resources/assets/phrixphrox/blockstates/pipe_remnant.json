@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "phrixphrox:block/pipe_remnant_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "phrixphrox:block/pipe_remnant"
+    },
+    "axis=z": {
+      "model": "phrixphrox:block/pipe_remnant_horizontal",
+      "x": 90
+    }
+  }
+}
