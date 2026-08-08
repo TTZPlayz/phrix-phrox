@@ -1,22 +1,13 @@
 package com.ttzplayz.phrixphrox;
 
 import com.mojang.logging.LogUtils;
-import com.ttzplayz.phrixphrox.blocks.ModBlocks;
-import com.ttzplayz.phrixphrox.items.*;
-import com.ttzplayz.phrixphrox.items.ModItems;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
+import com.ttzplayz.phrixphrox.blocks.PPBlocks;
+import com.ttzplayz.phrixphrox.items.PPCreativeModeTabs;
+import com.ttzplayz.phrixphrox.items.PPItems;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -29,6 +20,10 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import org.slf4j.Logger;
+
+import static net.minecraft.world.item.CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
+import static net.minecraft.world.item.Items.*;
+
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(PhrixPhrox.MOD_ID)
@@ -45,8 +40,10 @@ public class PhrixPhrox {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
-        ModItems.register(modEventBus);
-        ModBlocks.register(modEventBus);
+        PPItems.register(modEventBus);
+        PPBlocks.register(modEventBus);
+
+        PPCreativeModeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
         // Register the item to a creative tab
@@ -59,14 +56,19 @@ public class PhrixPhrox {
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            for (DeferredItem<Item> item : ModItems.ALL_ITEMS) {
-                event.accept(item);
-            }
+        if (event.getTabKey() == CreativeModeTabs.COMBAT) {
+            event.insertAfter(IRON_SWORD.getDefaultInstance(), PPItems.PEWTER_SWORD.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(PPItems.PEWTER_SWORD.toStack(), PPItems.PEWTER_AXE.toStack(), PARENT_AND_SEARCH_TABS);
+        }
 
-            for (DeferredBlock<Block> block : ModBlocks.ALL_BLOCKS) {
-                event.accept(block);
-            }
+        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+            event.insertAfter(CHISELED_TUFF_BRICKS.getDefaultInstance(), PPBlocks.LIMESTONE.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(PPBlocks.LIMESTONE.toStack(), PPBlocks.POLISHED_LIMESTONE.toStack(), PARENT_AND_SEARCH_TABS);
+        }
+
+        if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
+            event.insertAfter(TUFF.getDefaultInstance(), PPBlocks.LIMESTONE.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(ANCIENT_DEBRIS.getDefaultInstance(), PPBlocks.PIPE_REMNANT.toStack(), PARENT_AND_SEARCH_TABS);
         }
     }
 

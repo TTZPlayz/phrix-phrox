@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": "phrixphrox:lead_ingot"
+  },
+  "pattern": [
+    "AA"
+  ],
+  "result": {
+    "id": "phrixphrox:lead_tablet"
+  }
+}

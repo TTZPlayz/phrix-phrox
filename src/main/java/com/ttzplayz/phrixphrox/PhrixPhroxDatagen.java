@@ -1,8 +1,8 @@
 package com.ttzplayz.phrixphrox;
 
-import com.ttzplayz.phrixphrox.datagen.ModBlockTagsProvider;
-import com.ttzplayz.phrixphrox.datagen.ModModelProvider;
-import com.ttzplayz.phrixphrox.datagen.ModRecipeProvider;
+import com.ttzplayz.phrixphrox.datagen.PPBlockTagsProvider;
+import com.ttzplayz.phrixphrox.datagen.PPModelProvider;
+import com.ttzplayz.phrixphrox.datagen.PPRecipeProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,8 +18,8 @@ public class PhrixPhroxDatagen {
         PackOutput packOutput = generator.getPackOutput();
         var lookupProvider = event.getLookupProvider();
 
-        generator.addProvider(true, new ModModelProvider(packOutput));
-        generator.addProvider(true, new ModBlockTagsProvider(packOutput, lookupProvider));
-        generator.addProvider(true, new ModRecipeProvider.Runner(packOutput, lookupProvider));
+        generator.addProvider(true, new PPModelProvider(packOutput));
+        generator.addProvider(true, new PPBlockTagsProvider(packOutput, lookupProvider));
+        generator.addProvider(true, new PPRecipeProvider.Runner(packOutput, lookupProvider));
     }
 }

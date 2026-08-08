@@ -1,10 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
-  "group": "cursed stylus",
   "key": {
     "A": "minecraft:gold_ingot",
-    "B": "phrixphrox:lead_ingot",
+    "B": "phrixphrox:lead_scrap",
     "C": "minecraft:stick"
   },
   "pattern": [
