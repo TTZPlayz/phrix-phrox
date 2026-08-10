@@ -25,9 +25,9 @@ public class PPModelProvider extends ModelProvider {
         for (DeferredItem<Item> item : PPItems.FLAT_ITEMS) {
             itemModels.generateFlatItem(item.get(), ModelTemplates.FLAT_ITEM);
         }
-
-        itemModels.generateFlatItem(PPItems.PEWTER_SWORD.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
-        itemModels.generateFlatItem(PPItems.PEWTER_AXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        for (DeferredItem<Item> item : PPItems.TOOL_ITEMS) {
+            itemModels.generateFlatItem(item.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        }
 
         // Blocks
 
