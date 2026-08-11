@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "phrixphrox:pewter_ingot",
+  "base": "minecraft:iron_pickaxe",
+  "result": {
+    "id": "phrixphrox:pewter_mattock"
+  },
+  "template": "phrixphrox:pewter_upgrade_template"
+}

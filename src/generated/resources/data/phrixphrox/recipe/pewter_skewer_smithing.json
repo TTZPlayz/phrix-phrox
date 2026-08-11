@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "phrixphrox:pewter_ingot",
+  "base": "minecraft:iron_spear",
+  "result": {
+    "id": "phrixphrox:pewter_skewer"
+  },
+  "template": "phrixphrox:pewter_upgrade_template"
+}

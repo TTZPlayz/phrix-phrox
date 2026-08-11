@@ -4,10 +4,10 @@ import com.ttzplayz.phrixphrox.PhrixPhrox;
 import java.util.Arrays;
 import java.util.List;
 
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.HoeItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ShovelItem;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -31,6 +31,31 @@ public class PPItems {
     public static final DeferredItem<Item> PEWTER_SPEAR = ITEMS.registerItem("pewter_skewer", properties -> new Item(properties.spear(PEWTER, 0.95f, 0.7f, 0.7f,
             3.5f, 13f, 8.5f, 5.1f, 13.37f, 4.67f))); //edit once we figure out what values mean
 
+    public static final DeferredItem<Item> PEWTER_UPGRADE_TEMPLATE = ITEMS.registerItem("pewter_upgrade_template",
+            properties -> createPewterUpgradeTemplate(properties.rarity(Rarity.UNCOMMON)));
+
+    private static SmithingTemplateItem createPewterUpgradeTemplate(Item.Properties properties) {
+        return new SmithingTemplateItem(
+            Component.translatable("item.phrixphrox.smithing_template.pewter_upgrade.applies_to").withStyle(ChatFormatting.BLUE),
+            Component.translatable("item.phrixphrox.smithing_template.pewter_upgrade.ingredients").withStyle(ChatFormatting.BLUE),
+            Component.translatable("item.phrixphrox.smithing_template.pewter_upgrade.base_slot_description"),
+            Component.translatable("item.phrixphrox.smithing_template.pewter_upgrade.additions_slot_description"),
+
+            List.of(
+                Identifier.withDefaultNamespace("container/slot/sword"),
+                Identifier.withDefaultNamespace("container/slot/pickaxe"),
+                Identifier.withDefaultNamespace("container/slot/axe"),
+                Identifier.withDefaultNamespace("container/slot/shovel"),
+                Identifier.withDefaultNamespace("container/slot/hoe"),
+                Identifier.withDefaultNamespace("container/slot/spear")
+            ),
+            List.of(Identifier.withDefaultNamespace("container/slot/ingot")),
+            properties
+        );
+    }
+
+
+
     // CURSING
     public static final DeferredItem<Item> BOUND_DEFIXION = ITEMS.registerSimpleItem("bound_defixion");
     public static final DeferredItem<Item> CURSED_STYLUS = ITEMS.registerSimpleItem("cursed_stylus");
@@ -38,22 +63,28 @@ public class PPItems {
     public static final DeferredItem<Item> LEAD_TABLET = ITEMS.registerSimpleItem("lead_tablet");
 
     public static final List<DeferredItem<Item>> ALL_ITEMS = Arrays.asList(
-        BOUND_DEFIXION,
-        CURSED_STYLUS,
-        DEFIXION,
-        LEAD_TABLET,
 
-        LEAD_INGOT,
+
+
+        CURSED_STYLUS,
+        LEAD_TABLET,
+        DEFIXION,
+        BOUND_DEFIXION,
+
         LEAD_SCRAP,
-        PEWTER_INGOT,
+        LEAD_INGOT,
         PLUMBOUS_MIXTURE,
+        PEWTER_INGOT,
+
 
         PEWTER_SWORD,
         PEWTER_AXE,
         PEWTER_PICKAXE,
         PEWTER_SHOVEL,
         PEWTER_HOE,
-        PEWTER_SPEAR
+        PEWTER_SPEAR,
+
+        PEWTER_UPGRADE_TEMPLATE
     );
 
     public static final List<DeferredItem<Item>> FLAT_ITEMS = Arrays.asList(
@@ -65,7 +96,9 @@ public class PPItems {
         LEAD_INGOT,
         LEAD_SCRAP,
         PEWTER_INGOT,
-        PLUMBOUS_MIXTURE
+        PLUMBOUS_MIXTURE,
+
+        PEWTER_UPGRADE_TEMPLATE
     );
 
     public static final List<DeferredItem<Item>> TOOL_ITEMS = Arrays.asList(

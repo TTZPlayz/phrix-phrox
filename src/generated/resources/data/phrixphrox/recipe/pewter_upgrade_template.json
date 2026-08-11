@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "L": "phrixphrox:lead_ingot",
+    "P": "phrixphrox:pewter_ingot",
+    "U": "phrixphrox:pewter_upgrade_template"
+  },
+  "pattern": [
+    "PLP",
+    "PUP",
+    "PPP"
+  ],
+  "result": {
+    "id": "phrixphrox:pewter_upgrade_template"
+  }
+}

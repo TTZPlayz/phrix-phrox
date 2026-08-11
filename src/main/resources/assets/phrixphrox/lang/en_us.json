@@ -13,6 +13,12 @@
   "item.phrixphrox.pewter_sickle": "Pewter Sickle",
   "item.phrixphrox.pewter_skewer": "Pewter Skewer",
 
+  "item.phrixphrox.pewter_upgrade_template": "Pewter Upgrade Smithing Template",
+  "item.phrixphrox.smithing_template.pewter_upgrade.applies_to": "Iron Equipment",
+  "item.phrixphrox.smithing_template.pewter_upgrade.ingredients": "Pewter Ingot",
+  "item.phrixphrox.smithing_template.pewter_upgrade.base_slot_description": "Add iron armor, weapon, or tool",
+  "item.phrixphrox.smithing_template.pewter_upgrade.additions_slot_description": "Add Pewter Ingot",
+
   "item.phrixphrox.lead_tablet": "Lead Tablet",
   "item.phrixphrox.defixion": "Defixion",
   "item.phrixphrox.bound_defixion": "Bound Defixion",

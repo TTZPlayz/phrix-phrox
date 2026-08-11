@@ -57,14 +57,34 @@ public class PhrixPhrox {
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
-            event.insertAfter(IRON_SWORD.getDefaultInstance(), PPItems.PEWTER_SWORD.toStack(), PARENT_AND_SEARCH_TABS);
-            event.insertAfter(PPItems.PEWTER_SWORD.toStack(), PPItems.PEWTER_AXE.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(DIAMOND_SWORD.getDefaultInstance(), PPItems.PEWTER_SWORD.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(DIAMOND_AXE.getDefaultInstance(), PPItems.PEWTER_AXE.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(DIAMOND_SPEAR.getDefaultInstance(), PPItems.PEWTER_SPEAR.toStack(), PARENT_AND_SEARCH_TABS);
+        }
+
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.insertAfter(DIAMOND_HOE.getDefaultInstance(), PPItems.PEWTER_SHOVEL.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(PPItems.PEWTER_SHOVEL.toStack(), PPItems.PEWTER_PICKAXE.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(PPItems.PEWTER_PICKAXE.toStack(), PPItems.PEWTER_AXE.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(PPItems.PEWTER_AXE.toStack(), PPItems.PEWTER_HOE.toStack(), PARENT_AND_SEARCH_TABS);
         }
 
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.insertAfter(CHISELED_TUFF_BRICKS.getDefaultInstance(), PPBlocks.LIMESTONE.toStack(), PARENT_AND_SEARCH_TABS);
             event.insertAfter(PPBlocks.LIMESTONE.toStack(), PPBlocks.POLISHED_LIMESTONE.toStack(), PARENT_AND_SEARCH_TABS);
         }
+
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.insertAfter(ANCIENT_DEBRIS.getDefaultInstance(), PPBlocks.PIPE_REMNANT.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(GOLD_INGOT.getDefaultInstance(), PPItems.LEAD_SCRAP.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(RAW_GOLD.getDefaultInstance(), PPItems.PLUMBOUS_MIXTURE.toStack(), PARENT_AND_SEARCH_TABS);
+
+
+            event.insertAfter(GOLD_INGOT.getDefaultInstance(), PPItems.LEAD_INGOT.toStack(), PARENT_AND_SEARCH_TABS);
+            event.insertAfter(PPItems.LEAD_INGOT.toStack(), PPItems.PEWTER_INGOT.toStack(), PARENT_AND_SEARCH_TABS);
+
+            event.insertAfter(NETHERITE_UPGRADE_SMITHING_TEMPLATE.getDefaultInstance(), PPItems.PEWTER_UPGRADE_TEMPLATE.toStack(), PARENT_AND_SEARCH_TABS);
+        } //change to after gold? (for lead), not sure about pewter
 
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
             event.insertAfter(TUFF.getDefaultInstance(), PPBlocks.LIMESTONE.toStack(), PARENT_AND_SEARCH_TABS);

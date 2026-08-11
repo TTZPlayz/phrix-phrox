@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_pewter_upgrade_template": {
+      "conditions": {
+        "items": [
+          {
+            "items": "phrixphrox:pewter_upgrade_template"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "phrixphrox:pewter_mattock_smithing"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_pewter_upgrade_template"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "phrixphrox:pewter_mattock_smithing"
+    ]
+  }
+}
