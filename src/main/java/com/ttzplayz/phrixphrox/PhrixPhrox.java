@@ -1,7 +1,11 @@
 package com.ttzplayz.phrixphrox;
 
+import static net.minecraft.world.item.CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
+import static net.minecraft.world.item.Items.*;
+
 import com.mojang.logging.LogUtils;
 import com.ttzplayz.phrixphrox.blocks.PPBlocks;
+import com.ttzplayz.phrixphrox.data.PPData;
 import com.ttzplayz.phrixphrox.items.PPCreativeModeTabs;
 import com.ttzplayz.phrixphrox.items.PPItems;
 import net.minecraft.world.item.CreativeModeTab;
@@ -21,10 +25,6 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import org.slf4j.Logger;
 
-import static net.minecraft.world.item.CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
-import static net.minecraft.world.item.Items.*;
-
-
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(PhrixPhrox.MOD_ID)
 public class PhrixPhrox {
@@ -42,6 +42,7 @@ public class PhrixPhrox {
 
         PPItems.register(modEventBus);
         PPBlocks.register(modEventBus);
+        PPData.register(modEventBus);
 
         PPCreativeModeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 
@@ -78,7 +79,6 @@ public class PhrixPhrox {
             event.insertAfter(ANCIENT_DEBRIS.getDefaultInstance(), PPBlocks.PIPE_REMNANT.toStack(), PARENT_AND_SEARCH_TABS);
             event.insertAfter(GOLD_INGOT.getDefaultInstance(), PPItems.LEAD_SCRAP.toStack(), PARENT_AND_SEARCH_TABS);
             event.insertAfter(RAW_GOLD.getDefaultInstance(), PPItems.PLUMBOUS_MIXTURE.toStack(), PARENT_AND_SEARCH_TABS);
-
 
             event.insertAfter(GOLD_INGOT.getDefaultInstance(), PPItems.LEAD_INGOT.toStack(), PARENT_AND_SEARCH_TABS);
             event.insertAfter(PPItems.LEAD_INGOT.toStack(), PPItems.PEWTER_INGOT.toStack(), PARENT_AND_SEARCH_TABS);
