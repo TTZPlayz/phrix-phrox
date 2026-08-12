@@ -22,6 +22,11 @@ public class Defixion extends Item {
 
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        // We want the server to handle this, not the client
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+
         if (hand == InteractionHand.OFF_HAND) {
             ItemStack carried = player.getMainHandItem();
 

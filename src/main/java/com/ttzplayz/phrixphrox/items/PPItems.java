@@ -59,7 +59,7 @@ public class PPItems {
     // CURSING
     public static final DeferredItem<Item> BOUND_DEFIXION = ITEMS.registerSimpleItem("bound_defixion");
     public static final DeferredItem<Item> CURSED_STYLUS = ITEMS.registerSimpleItem("cursed_stylus");
-    public static final DeferredItem<Item> DEFIXION = ITEMS.registerSimpleItem("defixion");
+    public static final DeferredItem<Item> DEFIXION = ITEMS.registerItem("defixion", (properties) -> new Defixion(properties));
     public static final DeferredItem<Item> LEAD_TABLET = ITEMS.registerSimpleItem("lead_tablet");
 
     public static final List<DeferredItem<Item>> ALL_ITEMS = Arrays.asList(
