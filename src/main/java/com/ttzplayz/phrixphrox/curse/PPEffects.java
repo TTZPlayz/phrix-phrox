@@ -24,6 +24,12 @@ public class PPEffects {
             () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
     public static final Holder<MobEffect> SEVERED_THREADS = MOB_EFFECTS.register("severed_threads",
             () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
+    public static final Holder<MobEffect> STARVED_FARMER = MOB_EFFECTS.register("starved_farmer",
+            () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
+    public static final Holder<MobEffect> LOST_TRAVELER = MOB_EFFECTS.register("lost_traveler",
+            () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
+    public static final Holder<MobEffect> TIMELOCKED_CLOCKMAKER = MOB_EFFECTS.register("timelocked_clockmaker",
+            () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
 
     public static final List<Holder<MobEffect>> ALL_CURSES = Arrays.asList(
             HOLLOW_VOICE,
