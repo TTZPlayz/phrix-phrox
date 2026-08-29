@@ -5,15 +5,15 @@ import static net.minecraft.world.item.Items.*;
 
 import com.mojang.logging.LogUtils;
 import com.ttzplayz.phrixphrox.blocks.PPBlocks;
+import com.ttzplayz.phrixphrox.curse.PPEffects;
 import com.ttzplayz.phrixphrox.data.PPData;
 import com.ttzplayz.phrixphrox.items.PPCreativeModeTabs;
 import com.ttzplayz.phrixphrox.items.PPItems;
 import com.ttzplayz.phrixphrox.saveddata.PlayerCurseData;
 
 import net.minecraft.world.item.CreativeModeTab;
+import com.ttzplayz.phrixphrox.particle.PPParticles;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -23,8 +23,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredItem;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -45,6 +43,8 @@ public class PhrixPhrox {
         PPItems.register(modEventBus);
         PPBlocks.register(modEventBus);
         PPData.register(modEventBus);
+        PPEffects.register(modEventBus);
+        PPParticles.register(modEventBus);
 
         PPCreativeModeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 
