@@ -1,6 +1,8 @@
 package com.ttzplayz.phrixphrox.items;
 
 import com.ttzplayz.phrixphrox.data.PPData;
+import com.ttzplayz.phrixphrox.saveddata.PlayerCurseData;
+
 import java.util.Random;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;

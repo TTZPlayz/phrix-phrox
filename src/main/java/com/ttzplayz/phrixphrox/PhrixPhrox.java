@@ -8,6 +8,8 @@ import com.ttzplayz.phrixphrox.blocks.PPBlocks;
 import com.ttzplayz.phrixphrox.data.PPData;
 import com.ttzplayz.phrixphrox.items.PPCreativeModeTabs;
 import com.ttzplayz.phrixphrox.items.PPItems;
+import com.ttzplayz.phrixphrox.saveddata.PlayerCurseData;
+
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -94,5 +96,7 @@ public class PhrixPhrox {
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {}
+    public void onServerStarting(ServerStartingEvent event) {
+        event.getServer().getDataStorage().computeIfAbsent(PlayerCurseData.ID);
+    }
 }
