@@ -30,6 +30,7 @@ public class PlayerCurseData extends SavedData {
     );
 
     public PlayerCurseData() {
+        this.curses = Map.of();
     }
 
     public PlayerCurseData(Map<Long, CurseInstance> curses) {
