@@ -24,6 +24,8 @@ public class PPEffects {
             () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
     public static final Holder<MobEffect> SEVERED_THREADS = MOB_EFFECTS.register("severed_threads",
             () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
+    public static final Holder<MobEffect> BLUNDER_STRIKE = MOB_EFFECTS.register("blunder_strike",
+            () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
     public static final Holder<MobEffect> STARVED_FARMER = MOB_EFFECTS.register("starved_farmer",
             () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
     public static final Holder<MobEffect> LOST_TRAVELER = MOB_EFFECTS.register("lost_traveler",
@@ -33,7 +35,8 @@ public class PPEffects {
 
     public static final List<Holder<MobEffect>> ALL_CURSES = Arrays.asList(
             HOLLOW_VOICE,
-            SEVERED_THREADS
+            SEVERED_THREADS,
+            BLUNDER_STRIKE
     );
 
 
