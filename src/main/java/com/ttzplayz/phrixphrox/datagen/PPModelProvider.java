@@ -1,7 +1,7 @@
 package com.ttzplayz.phrixphrox.datagen;
 
 import com.ttzplayz.phrixphrox.PhrixPhrox;
-import com.ttzplayz.phrixphrox.blocks.PPBlocks;
+import com.ttzplayz.phrixphrox.block.PPBlocks;
 import com.ttzplayz.phrixphrox.items.*;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
@@ -34,5 +34,6 @@ public class PPModelProvider extends ModelProvider {
         blockModels.createRotatedPillarWithHorizontalVariant(PPBlocks.PIPE_REMNANT.get(), TexturedModel.COLUMN_ALT, TexturedModel.COLUMN_HORIZONTAL_ALT);
         blockModels.createTrivialCube(PPBlocks.LIMESTONE.get()); //commented out later?
         blockModels.createTrivialCube(PPBlocks.POLISHED_LIMESTONE.get()); //commented out later?
+        blockModels.createNonTemplateHorizontalBlock(PPBlocks.WRITING_DESK.get());
     }
 }

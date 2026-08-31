@@ -1,0 +1,100 @@
+package com.ttzplayz.phrixphrox.block.entity;
+
+import com.ttzplayz.phrixphrox.menu.WritingDeskMenu;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import org.jspecify.annotations.Nullable;
+
+public class WritingDeskBlockEntity extends BlockEntity implements MenuProvider {
+    public static final int SLOT_TABLET = 0;
+    public static final int SLOT_FOCUS = 1;
+    public static final int SLOT_OUTPUT = 2;
+
+    public final ItemStacksResourceHandler inventory = new ItemStacksResourceHandler(3) {
+        @Override
+        protected void onContentsChanged(int index, ItemStack previousContents) {
+            super.onContentsChanged(index, previousContents);
+            WritingDeskBlockEntity.this.setChanged();
+            if(level != null && !level.isClientSide()) {
+                level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+            }
+        }
+
+
+
+        @Override
+        protected int getCapacity(int index, ItemResource resource) {
+            return 1;
+        }
+    };
+
+    public WritingDeskBlockEntity(BlockPos worldPosition, BlockState blockState) {
+        super(PPBlockEntities.WRITING_DESK_BE.get(), worldPosition, blockState);
+    }
+
+    public void clearContents() {
+        for (int i = 0; i < inventory.size(); i++) {
+            inventory.set(i, ItemResource.EMPTY, 0);
+        }
+    }
+
+    public void drops() {
+        SimpleContainer inv = new SimpleContainer(inventory.size());
+        for(int i = 0; i < inventory.size(); i++) {
+            ItemAccess itemAccess = ItemAccess.forHandlerIndex(inventory, i);
+            inv.setItem(i, new ItemStack(itemAccess.getResource().getItem(), itemAccess.getAmount()));
+        }
+        Containers.dropContents(this.level, this.worldPosition, inv);
+    }
+
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putChild("inventory", inventory);
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        input.child("inventory").ifPresent(inventory::deserialize);
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+        return new WritingDeskMenu(containerId, inventory, this, this.inventory);
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("block.phrixphrox.writing_desk");
+    }
+
+    @Override
+    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
+    }
+}

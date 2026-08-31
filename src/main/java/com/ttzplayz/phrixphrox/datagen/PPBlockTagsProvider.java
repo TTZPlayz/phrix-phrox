@@ -1,7 +1,7 @@
 package com.ttzplayz.phrixphrox.datagen;
 
 import com.ttzplayz.phrixphrox.PhrixPhrox;
-import com.ttzplayz.phrixphrox.blocks.PPBlocks;
+import com.ttzplayz.phrixphrox.block.PPBlocks;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -19,7 +19,8 @@ public class PPBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(PPBlocks.PIPE_REMNANT.getKey())
                 .add(PPBlocks.LIMESTONE.getKey())
-                .add(PPBlocks.POLISHED_LIMESTONE.getKey());
+                .add(PPBlocks.POLISHED_LIMESTONE.getKey())
+                .add(PPBlocks.WRITING_DESK.getKey());
 
         tag(BlockTags.NEEDS_IRON_TOOL).add(PPBlocks.PIPE_REMNANT.getKey());
     }

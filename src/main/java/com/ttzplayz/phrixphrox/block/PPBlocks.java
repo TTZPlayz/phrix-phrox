@@ -1,4 +1,4 @@
-package com.ttzplayz.phrixphrox.blocks;
+package com.ttzplayz.phrixphrox.block;
 
 import com.ttzplayz.phrixphrox.PhrixPhrox;
 import com.ttzplayz.phrixphrox.items.PPItems;
@@ -26,7 +26,14 @@ public class PPBlocks {
             new PipeRemnant(properties.strength(4f).requiresCorrectToolForDrops())
     );
 
-    public static final List<DeferredBlock<Block>> ALL_BLOCKS = Arrays.asList(PIPE_REMNANT, LIMESTONE, POLISHED_LIMESTONE);
+    public static final DeferredBlock<Block> WRITING_DESK = registerBlock("writing_desk",
+            properties -> new WritingDeskBlock(properties.strength(3F).requiresCorrectToolForDrops()));
+
+    public static final List<DeferredBlock<Block>> ALL_BLOCKS = Arrays.asList(
+            PIPE_REMNANT,
+            LIMESTONE,
+            POLISHED_LIMESTONE,
+            WRITING_DESK);
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Function<BlockBehaviour.Properties, T> function) {
         DeferredBlock<T> toReturn = BLOCKS.registerBlock(name, function);

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "phrixphrox:block/writing_desk",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "phrixphrox:block/writing_desk"
+    },
+    "facing=south": {
+      "model": "phrixphrox:block/writing_desk",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "phrixphrox:block/writing_desk",
+      "y": 270
+    }
+  }
+}

@@ -4,14 +4,15 @@ import static net.minecraft.world.item.CreativeModeTab.TabVisibility.PARENT_AND_
 import static net.minecraft.world.item.Items.*;
 
 import com.mojang.logging.LogUtils;
-import com.ttzplayz.phrixphrox.blocks.PPBlocks;
+import com.ttzplayz.phrixphrox.block.PPBlocks;
+import com.ttzplayz.phrixphrox.block.entity.PPBlockEntities;
 import com.ttzplayz.phrixphrox.curse.PPEffects;
 import com.ttzplayz.phrixphrox.data.PPData;
 import com.ttzplayz.phrixphrox.items.PPCreativeModeTabs;
 import com.ttzplayz.phrixphrox.items.PPItems;
+import com.ttzplayz.phrixphrox.menu.PPMenuTypes;
 import com.ttzplayz.phrixphrox.saveddata.PlayerCurseData;
 
-import net.minecraft.world.item.CreativeModeTab;
 import com.ttzplayz.phrixphrox.particle.PPParticles;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
@@ -42,9 +43,11 @@ public class PhrixPhrox {
 
         PPItems.register(modEventBus);
         PPBlocks.register(modEventBus);
+        PPBlockEntities.register(modEventBus);
         PPData.register(modEventBus);
         PPEffects.register(modEventBus);
         PPParticles.register(modEventBus);
+        PPMenuTypes.register(modEventBus);
 
         PPCreativeModeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 

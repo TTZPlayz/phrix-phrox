@@ -1,5 +1,7 @@
 package com.ttzplayz.phrixphrox;
 
+import com.ttzplayz.phrixphrox.menu.PPMenuTypes;
+import com.ttzplayz.phrixphrox.menu.WritingDeskScreen;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -7,6 +9,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
@@ -24,6 +27,11 @@ public class PhrixPhroxClient {
             IConfigScreenFactory.class,
             ConfigurationScreen::new
         );
+    }
+
+    @SubscribeEvent
+    static void onRegisterScreens(RegisterMenuScreensEvent event) {
+        event.register(PPMenuTypes.WRITING_DESK_MENU.get(), WritingDeskScreen::new);
     }
 
     @SubscribeEvent
