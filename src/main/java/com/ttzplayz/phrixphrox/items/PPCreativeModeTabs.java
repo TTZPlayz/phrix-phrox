@@ -1,11 +1,10 @@
 package com.ttzplayz.phrixphrox.items;
 
 import com.ttzplayz.phrixphrox.PhrixPhrox;
-import com.ttzplayz.phrixphrox.blocks.PPBlocks;
+import com.ttzplayz.phrixphrox.block.PPBlocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;

@@ -1,7 +1,7 @@
 package com.ttzplayz.phrixphrox.datagen;
 
 import com.ttzplayz.phrixphrox.PhrixPhrox;
-import com.ttzplayz.phrixphrox.blocks.PPBlocks;
+import com.ttzplayz.phrixphrox.block.PPBlocks;
 import com.ttzplayz.phrixphrox.items.PPItems;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;

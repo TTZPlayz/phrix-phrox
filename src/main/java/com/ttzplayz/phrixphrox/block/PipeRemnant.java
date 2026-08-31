@@ -1,7 +1,7 @@
-package com.ttzplayz.phrixphrox.blocks;
+package com.ttzplayz.phrixphrox.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.core.Direction;
+
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
