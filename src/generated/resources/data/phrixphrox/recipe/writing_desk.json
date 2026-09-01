@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "L": "phrixphrox:limestone",
+    "P": "phrixphrox:polished_limestone"
+  },
+  "pattern": [
+    "PPP",
+    " L ",
+    "PPP"
+  ],
+  "result": {
+    "id": "phrixphrox:writing_desk"
+  }
+}

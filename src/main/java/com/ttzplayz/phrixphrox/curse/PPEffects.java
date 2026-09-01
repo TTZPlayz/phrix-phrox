@@ -2,9 +2,12 @@ package com.ttzplayz.phrixphrox.curse;
 
 import com.ttzplayz.phrixphrox.PhrixPhrox;
 import com.ttzplayz.phrixphrox.particle.PPParticles;
+import com.ttzplayz.phrixphrox.saveddata.CurseInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -39,6 +42,24 @@ public class PPEffects {
             BLUNDER_STRIKE
     );
 
+
+    public static Holder<MobEffect> effectFor(CurseInstance.Curse curse) {
+        if (curse == null) return null;
+        return switch (curse) {
+            case HollowVoice -> HOLLOW_VOICE;
+            case SeveredThreads -> SEVERED_THREADS;
+            case BlunderStrike -> BLUNDER_STRIKE;
+            default -> null;
+        };
+    }
+
+    public static boolean isEscalated(LivingEntity entity, Holder<MobEffect> effect) {
+        MobEffectInstance instance = entity.getEffect(effect);
+        return instance != null && instance.getAmplifier() >= STAGE_ESCALATED;
+    }
+
+    public static final int STAGE_INITIAL = 0;
+    public static final int STAGE_ESCALATED = 1;
 
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);

@@ -1,13 +1,32 @@
 package com.ttzplayz.phrixphrox.menu;
 
 import com.ttzplayz.phrixphrox.PhrixPhrox;
+import com.ttzplayz.phrixphrox.data.PPData;
+import com.ttzplayz.phrixphrox.items.PPItems;
+import com.ttzplayz.phrixphrox.saveddata.CurseInstance;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ResolvableProfile;
+import org.jspecify.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> {
     private static final Identifier UNEQUIPPED = gui("writing_desk_unequipped.png");
@@ -15,19 +34,97 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     private static final Identifier WITH_TABLET = gui("writing_desk_gui_with_tablet.png");
     private static final Identifier FINISHED = gui("writing_desk_gui_finished.png");
 
+    private static final Identifier STYLUS = Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "textures/item/cursed_stylus.png");
+    private static final Identifier RUNE_TEMPLATE = Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "textures/item/rune_template.png");
+    private static final Identifier EMBLEM_GLOW = gui("sulis_icon_small_glowing.png");
+    private static final Identifier TABLET_OUTLINE = gui("lead_tablet_outline.png");
+
     private static final int TABLET_X0 = 73;
     private static final int TABLET_Y0 = 17;
     private static final int TABLET_X1 = 135;
     private static final int TABLET_Y1 = 98;
 
-    private static final int LABEL_COLOR = -12566464;
+    private static final int RUNE_SIZE = 36;
+    private static final int RUNE_X = TABLET_X0 + (TABLET_X1 - TABLET_X0 - RUNE_SIZE) / 2;
+    private static final int RUNE_Y = TABLET_Y1 - 3 - RUNE_SIZE;
 
-    private static final int[] TEXT_ROWS = { 52, 63, 74, 85 };
-    private static final String[] TEST_LINES = { "test 1", "test 2", "test 3", "test 4" };
+    private static final int INSCRIPTION_X = TABLET_X0 + 2;
+    private static final int INSCRIPTION_Y = TABLET_Y0 + 2;
+    private static final int INSCRIPTION_WIDTH = TABLET_X1 - TABLET_X0 - 4;
+    private static final int INSCRIPTION_HEIGHT = RUNE_Y - 1 - INSCRIPTION_Y;
+    private static final float INSCRIPTION_SCALE_MAX = 1.0f;
+    private static final float SCALE_STEP = 0.01f;
+    private static final float SCALE_FLOOR = 0.2f;
+
+    private static final int READOUT_Y = WritingDeskMenu.TABLET_SLOT_Y + 22;
+    private static final int READOUT_HEIGHT = TABLET_Y1 - 2 - READOUT_Y;
+    private static final float READOUT_SCALE_MAX = 0.6f;
+
+    private static final int STYLUS_SIZE = 16;
+    private static final int STYLUS_OFFSET_X = -1;
+    private static final int STYLUS_OFFSET_Y = 0;
+
+    private static final int LABEL_COLOR = -12566464;
+    private static final int CARVED_COLOR = 0xFFFFFFFF;
+    private static final int SELECTION_COLOR = 0x33000000;
+    private static final int HOVER_COLOR = 0x1A000000;
+    private static final int LOCKED_COLOR = 0x80202020;
+    private static final int WANTED_COLOR = 0x5583E03B;
+
+    private static final int BOX_X0 = 14;
+    private static final int BOX_X1 = 59;
+    private static final int BOX_Y0 = 50;
+    private static final int BOX_PITCH = 11;
+    private static final int BOX_HEIGHT = 11;
+    private static final int ROW_TEXT_X = 17;
+    private static final float ROW_SCALE = 0.4f;
+
+    private static final float EMBLEM_CX = 37.5f;
+    private static final float EMBLEM_CY = 27.5f;
+    private static final float EMBLEM_R = 17f;
+    private static final int GLOW_SIZE = 48;
+    private static final int GLOW_X = 14;
+    private static final int GLOW_Y = 3;
+
+    private static final int OUTLINE_SIZE = 16;
+
+    private static final long OUTPUT_DELAY_NANOS = 700_000_000L;
+
+    private static final int INSCRIPTION_LINES = 5;
+    private static final int NAMED_LINE = 2;
+
+    private record CurseOption(CurseInstance.Curse curse, Identifier rune) {
+        Component name() {
+            return Component.translatable(curse.nameKey());
+        }
+    }
+
+    private record FittedText(float scale, List<String> lines, int chars) {}
+
+    private static final List<CurseOption> CURSES = List.of(
+            new CurseOption(CurseInstance.Curse.SeveredThreads, RUNE_TEMPLATE),
+            new CurseOption(CurseInstance.Curse.HollowVoice, RUNE_TEMPLATE),
+            new CurseOption(CurseInstance.Curse.BlunderStrike, RUNE_TEMPLATE));
 
     private static Identifier gui(String name) {
         return Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "textures/gui/writing_desk/" + name);
     }
+
+    private final RuneCarving carving = new RuneCarving(TABLET_X0, TABLET_Y0, TABLET_X1, TABLET_Y1, RUNE_X, RUNE_Y, RUNE_SIZE);
+
+    private @Nullable CurseOption selected;
+    private boolean reagentReady;
+    private boolean resultSent;
+    private boolean cursorHidden;
+    private long completedAtNanos;
+
+    private @Nullable List<Component> cachedSource;
+    private @Nullable FittedText cachedFit;
+    private int cachedBoxW;
+    private int cachedBoxH;
+    private float cachedMaxScale;
+    private float cachedFixedScale;
+    private float inscriptionScale;
 
     public WritingDeskScreen(WritingDeskMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, 208, 192);
@@ -43,9 +140,17 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
         return switch (menu.state()) {
             case UNEQUIPPED -> UNEQUIPPED;
             case NO_STYLUS -> NO_STYLUS;
-            case WITH_TABLET -> WITH_TABLET;
+            case WITH_TABLET, INSCRIBED -> WITH_TABLET;
             case FINISHED -> FINISHED;
         };
+    }
+
+    private boolean selectable() {
+        return menu.state() == WritingDeskMenu.DeskState.WITH_TABLET;
+    }
+
+    private boolean carvable() {
+        return selectable() && selected != null && reagentReady;
     }
 
     @Override
@@ -58,25 +163,457 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
+        int localX = xm - leftPos;
+        int localY = ym - topPos;
+
+        syncSelection();
+
+        boolean onTablet = carvable() && carving.inTablet(localX, localY);
+        setCursorHidden(onTablet);
+
+        if (menu.state() == WritingDeskMenu.DeskState.UNEQUIPPED) extractTabletPrompt(graphics);
+
         if (!menu.slotsVisible()) return;
 
         graphics.text(font, title, titleLabelX, titleLabelY, LABEL_COLOR, false);
 
-        for (int i = 0; i < TEXT_ROWS.length; i++) {
-            graphics.text(font, Component.literal(TEST_LINES[i]), 16, TEXT_ROWS[i], LABEL_COLOR, false);
+        extractCurseList(graphics, localX, localY, xm, ym);
+
+        switch (menu.state()) {
+            case WITH_TABLET -> {
+                if (selected != null) {
+                    extractInscription(graphics, inscriptionLines(selected.curse(), targetName()),
+                            reagentReady ? carving.progress() : 0f);
+                    if (reagentReady) {
+                        carving.extract(graphics);
+                    } else {
+                        extractReagentPrompt(graphics, localX, localY, xm, ym);
+                    }
+                }
+            }
+            case INSCRIBED -> extractInscribedDefixion(graphics);
+            case FINISHED -> extractReadout(graphics);
+            default -> { }
         }
+
+        if (onTablet) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, STYLUS,
+                    localX + STYLUS_OFFSET_X, localY + STYLUS_OFFSET_Y, 0, 0,
+                    STYLUS_SIZE, STYLUS_SIZE, STYLUS_SIZE, STYLUS_SIZE);
+        }
+
+        deliverResult();
+    }
+
+    private void syncSelection() {
+        if (!selectable()) {
+            if (selected != null) {
+                selected = null;
+                resultSent = false;
+                completedAtNanos = 0L;
+                carving.reset();
+            }
+            reagentReady = false;
+            return;
+        }
+
+        boolean ready = selected != null && reagentSatisfied(selected.curse());
+        if (ready == reagentReady) return;
+
+        reagentReady = ready;
+        completedAtNanos = 0L;
+        resultSent = false;
+        if (ready) {
+            carving.begin(selected.rune());
+        } else {
+            carving.reset();
+        }
+    }
+
+    private boolean reagentSatisfied(CurseInstance.Curse curse) {
+        Item reagent = curse.reagent();
+        return reagent != null && menu.focusStack().is(reagent);
+    }
+
+    @Override
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractContents(graphics, mouseX, mouseY, a);
+        if (minecraft == null || minecraft.player == null) return;
+
+        Predicate<ItemStack> wanted = wantedItem();
+        int litSlot = litSlot();
+
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(leftPos, topPos);
+        for (int i = 0; i < menu.slots.size(); i++) {
+            Slot slot = menu.slots.get(i);
+            if (!slot.isActive()) continue;
+            if (dimmed(i, slot, wanted, litSlot)) {
+                graphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, LOCKED_COLOR);
+            } else if (wanted != null && i != litSlot && wanted.test(slot.getItem())) {
+                graphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, WANTED_COLOR);
+            }
+        }
+        graphics.pose().popMatrix();
+    }
+
+    private boolean dimmed(int index, Slot slot, @Nullable Predicate<ItemStack> wanted, int litSlot) {
+        ItemStack stack = slot.getItem();
+
+        if (!stack.isEmpty() && minecraft != null && minecraft.player != null
+                && !slot.mayPickup(minecraft.player)) {
+            return true;
+        }
+        if (wanted == null) return false;
+        return index != litSlot && !wanted.test(stack);
+    }
+
+    private @Nullable Predicate<ItemStack> wantedItem() {
+        if (selectable() && selected != null && !reagentReady) {
+            Item reagent = selected.curse().reagent();
+            return reagent == null ? stack -> false : stack -> stack.is(reagent);
+        }
+        if (menu.state() == WritingDeskMenu.DeskState.INSCRIBED
+                && menu.tabletStack().get(PPData.TARGET_ID) == null) {
+            return WritingDeskMenu::isFocusable;
+        }
+        if (menu.state() == WritingDeskMenu.DeskState.UNEQUIPPED) {
+            return stack -> stack.is(PPItems.LEAD_TABLET) || stack.is(PPItems.DEFIXION);
+        }
+        return null;
+    }
+
+    private int litSlot() {
+        return menu.state() == WritingDeskMenu.DeskState.UNEQUIPPED
+                ? WritingDeskMenu.SLOT_INDEX_TABLET
+                : WritingDeskMenu.SLOT_INDEX_FOCUS;
+    }
+
+    @Override
+    protected void extractSlot(GuiGraphicsExtractor graphics, Slot slot, int mouseX, int mouseY) {
+        if (menu.state() == WritingDeskMenu.DeskState.INSCRIBED
+                && slot == menu.slots.get(WritingDeskMenu.SLOT_INDEX_TABLET)) {
+            return;
+        }
+        super.extractSlot(graphics, slot, mouseX, mouseY);
+    }
+
+    private void extractCurseList(GuiGraphicsExtractor graphics, int localX, int localY, int screenX, int screenY) {
+        int wrapWidth = Math.round((BOX_X1 - 2 - ROW_TEXT_X) / ROW_SCALE);
+
+        for (int i = 0; i < CURSES.size(); i++) {
+            CurseOption option = CURSES.get(i);
+            int y0 = BOX_Y0 + i * BOX_PITCH;
+            boolean hovered = selectable() && inBox(localX, localY, y0);
+
+            if (option == selected) {
+                graphics.fill(BOX_X0, y0, BOX_X1, y0 + BOX_HEIGHT, SELECTION_COLOR);
+            } else if (hovered) {
+                graphics.fill(BOX_X0, y0, BOX_X1, y0 + BOX_HEIGHT, HOVER_COLOR);
+            }
+
+            List<FormattedCharSequence> wrapped = font.split(option.name(), wrapWidth);
+            float blockHeight = wrapped.size() * font.lineHeight * ROW_SCALE;
+
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(ROW_TEXT_X, y0 + (BOX_HEIGHT - blockHeight) / 2f);
+            graphics.pose().scale(ROW_SCALE, ROW_SCALE);
+            int color = option == selected ? CARVED_COLOR : LABEL_COLOR;
+            for (int line = 0; line < wrapped.size(); line++) {
+                graphics.text(font, wrapped.get(line), 0, line * font.lineHeight, color, false);
+            }
+            graphics.pose().popMatrix();
+
+            if (hovered) {
+                graphics.setTooltipForNextFrame(font, option.name(), screenX, screenY);
+            }
+        }
+    }
+
+    private static boolean inBox(double x, double y, int boxY) {
+        return x >= BOX_X0 && x < BOX_X1 && y >= boxY && y < boxY + BOX_HEIGHT;
+    }
+
+    private void extractReagentPrompt(GuiGraphicsExtractor graphics, int localX, int localY, int screenX, int screenY) {
+        if (selected == null) return;
+        Item reagent = selected.curse().reagent();
+        if (reagent == null) return;
+
+        graphics.blit(RenderPipelines.GUI_TEXTURED, EMBLEM_GLOW, GLOW_X, GLOW_Y, 0, 0,
+                GLOW_SIZE, GLOW_SIZE, GLOW_SIZE, GLOW_SIZE, pulseTint());
+
+        float dx = localX + 0.5f - EMBLEM_CX;
+        float dy = localY + 0.5f - EMBLEM_CY;
+        if (dx * dx + dy * dy <= EMBLEM_R * EMBLEM_R) {
+            graphics.setTooltipForNextFrame(font, Component.translatable("tooltip.phrixphrox.needs",
+                    Component.translatable(reagent.getDescriptionId())), screenX, screenY);
+        }
+    }
+
+    private static int pulseTint() {
+        float pulse = (float) (0.5 + 0.5 * Math.sin(System.nanoTime() / 4.0e8));
+        return ((0x60 + Math.round(0x9F * pulse)) << 24) | 0xFFFFFF;
+    }
+
+    private void extractTabletPrompt(GuiGraphicsExtractor graphics) {
+        if (minecraft == null || minecraft.player == null) return;
+        if (!minecraft.player.getInventory().contains(
+                stack -> stack.is(PPItems.LEAD_TABLET) || stack.is(PPItems.DEFIXION))) {
+            return;
+        }
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TABLET_OUTLINE,
+                WritingDeskMenu.TABLET_SLOT_X, WritingDeskMenu.TABLET_SLOT_Y, 0, 0,
+                OUTLINE_SIZE, OUTLINE_SIZE, OUTLINE_SIZE, OUTLINE_SIZE, pulseTint());
+    }
+
+    private void extractInscription(GuiGraphicsExtractor graphics, List<Component> source, float progress) {
+        FittedText fit = fitted(source, INSCRIPTION_WIDTH, INSCRIPTION_HEIGHT, INSCRIPTION_SCALE_MAX, inscriptionScale());
+        int carvedChars = Math.round(progress * fit.chars());
+        drawFitted(graphics, fit, INSCRIPTION_X + INSCRIPTION_WIDTH / 2f, INSCRIPTION_Y, INSCRIPTION_HEIGHT, carvedChars);
+    }
+
+    private void extractInscribedDefixion(GuiGraphicsExtractor graphics) {
+        ItemStack defixion = menu.tabletStack();
+        Integer curseType = defixion.get(PPData.CURSE_TYPE);
+        if (curseType == null) return;
+
+        CurseInstance.Curse curse = CurseInstance.Curse.byOrdinal(curseType);
+        if (curse == null) return;
+
+        extractInscription(graphics, inscriptionLines(curse, defixion.get(PPData.TARGET_NAME)), 1f);
+        carving.extractFinished(graphics, RUNE_TEMPLATE);
+    }
+
+    private void extractReadout(GuiGraphicsExtractor graphics) {
+        ItemStack output = menu.outputStack();
+        Integer curseType = output.get(PPData.CURSE_TYPE);
+        if (curseType == null) return;
+
+        CurseInstance.Curse curse = CurseInstance.Curse.byOrdinal(curseType);
+        if (curse == null) return;
+
+        String target = output.get(PPData.TARGET_NAME);
+        List<Component> source = List.of(
+                Component.translatable("tooltip.phrixphrox.inscribed_curse", Component.translatable(curse.nameKey())),
+                Component.translatable("tooltip.phrixphrox.target", target != null
+                        ? Component.literal(target)
+                        : Component.translatable("tooltip.phrixphrox.target.unbound")));
+
+        FittedText fit = fitted(source, INSCRIPTION_WIDTH, READOUT_HEIGHT, READOUT_SCALE_MAX, 0f);
+        drawFitted(graphics, fit, INSCRIPTION_X + INSCRIPTION_WIDTH / 2f, READOUT_Y, READOUT_HEIGHT, 0);
+    }
+
+    private void drawFitted(GuiGraphicsExtractor graphics, FittedText fit, float centerX, int boxY, int boxH, int carvedChars) {
+        float blockHeight = fit.lines().size() * font.lineHeight * fit.scale();
+        float startY = boxY + (boxH - blockHeight) / 2f;
+
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(centerX, startY);
+        graphics.pose().scale(fit.scale(), fit.scale());
+
+        int consumed = 0;
+        for (int i = 0; i < fit.lines().size(); i++) {
+            String line = fit.lines().get(i);
+            int y = i * font.lineHeight;
+            int x = -font.width(line) / 2;
+
+            int carved = Mth.clamp(carvedChars - consumed, 0, line.length());
+            if (carved > 0) {
+                String head = line.substring(0, carved);
+                graphics.text(font, head, x, y, CARVED_COLOR, false);
+                x += font.width(head);
+            }
+            if (carved < line.length()) {
+                graphics.text(font, line.substring(carved), x, y, LABEL_COLOR, false);
+            }
+            consumed += line.length();
+        }
+
+        graphics.pose().popMatrix();
+    }
+
+    private List<Component> inscriptionLines(CurseInstance.Curse curse, @Nullable String target) {
+        List<Component> lines = new ArrayList<>(INSCRIPTION_LINES);
+        for (int i = 1; i <= INSCRIPTION_LINES; i++) {
+            if (i == NAMED_LINE && target != null) {
+                lines.add(Component.translatable(curse.inscriptionKey(i) + ".named", target));
+            } else {
+                lines.add(Component.translatable(curse.inscriptionKey(i)));
+            }
+        }
+        return lines;
+    }
+
+    private @Nullable String targetName() {
+        String fromOutput = menu.outputStack().get(PPData.TARGET_NAME);
+        if (fromOutput != null) return fromOutput;
+
+        ItemStack focus = menu.focusStack();
+        if (focus.isEmpty()) return null;
+        ResolvableProfile profile = focus.get(DataComponents.PROFILE);
+        return profile == null ? null : profile.name().orElse(null);
+    }
+
+    private float inscriptionScale() {
+        if (inscriptionScale <= 0f) {
+            inscriptionScale = shrinkToFit(inscriptionLines(CurseInstance.Curse.SeveredThreads, null),
+                    INSCRIPTION_WIDTH, INSCRIPTION_HEIGHT, INSCRIPTION_SCALE_MAX).scale();
+        }
+        return inscriptionScale;
+    }
+
+    private FittedText fitted(List<Component> source, int boxW, int boxH, float maxScale, float fixedScale) {
+        if (cachedFit != null && boxW == cachedBoxW && boxH == cachedBoxH
+                && maxScale == cachedMaxScale && fixedScale == cachedFixedScale
+                && source.equals(cachedSource)) {
+            return cachedFit;
+        }
+
+        FittedText result = fixedScale > 0f
+                ? wrapAt(source, boxW, fixedScale)
+                : shrinkToFit(source, boxW, boxH, maxScale);
+
+        cachedSource = source;
+        cachedFit = result;
+        cachedBoxW = boxW;
+        cachedBoxH = boxH;
+        cachedMaxScale = maxScale;
+        cachedFixedScale = fixedScale;
+        return result;
+    }
+
+    private FittedText shrinkToFit(List<Component> source, int boxW, int boxH, float maxScale) {
+        FittedText result = null;
+        for (float s = maxScale; s >= SCALE_FLOOR; s -= SCALE_STEP) {
+            result = wrapAt(source, boxW, s);
+            if (result.lines().size() * font.lineHeight * s <= boxH) break;
+        }
+        return result;
+    }
+
+    private FittedText wrapAt(List<Component> source, int boxW, float scale) {
+        List<String> wrapped = wrap(source, Math.max(1, Math.round(boxW / scale)));
+        return new FittedText(scale, wrapped, wrapped.stream().mapToInt(String::length).sum());
+    }
+
+    private List<String> wrap(List<Component> source, int width) {
+        List<String> out = new ArrayList<>();
+        for (Component line : source) {
+            for (FormattedText part : font.splitIgnoringLanguage(line, width)) {
+                out.add(part.getString());
+            }
+        }
+        return out;
+    }
+
+    private void deliverResult() {
+        if (resultSent || !carvable() || minecraft == null || minecraft.gameMode == null) return;
+
+        int button = pendingButton();
+        if (button < 0) return;
+
+        resultSent = true;
+        minecraft.gameMode.handleInventoryButtonClick(menu.containerId, button);
+    }
+
+    private int pendingButton() {
+        return switch (carving.status()) {
+            case COMPLETE -> {
+                if (completedAtNanos == 0L) {
+                    completedAtNanos = System.nanoTime();
+                    yield -1;
+                }
+                yield System.nanoTime() - completedAtNanos < OUTPUT_DELAY_NANOS
+                        ? -1
+                        : WritingDeskMenu.BUTTON_INSCRIBE_BASE + selected.curse().ordinal();
+            }
+            case RUINED -> WritingDeskMenu.BUTTON_RUIN;
+            default -> -1;
+        };
+    }
+
+    private void sendButton(int button) {
+        if (minecraft == null || minecraft.gameMode == null) return;
+        minecraft.gameMode.handleInventoryButtonClick(menu.containerId, button);
+        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+    }
+
+    private void setCursorHidden(boolean hidden) {
+        if (hidden == cursorHidden) return;
+        long window = GLFW.glfwGetCurrentContext();
+        if (window == 0L) return;
+        GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, hidden ? GLFW.GLFW_CURSOR_HIDDEN : GLFW.GLFW_CURSOR_NORMAL);
+        cursorHidden = hidden;
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (menu.state() == WritingDeskMenu.DeskState.WITH_TABLET) {
-            double rx = event.x() - leftPos;
-            double ry = event.y() - topPos;
-            if (rx >= TABLET_X0 && rx < TABLET_X1 && ry >= TABLET_Y0 && ry < TABLET_Y1) {
-                minecraft.gameMode.handleInventoryButtonClick(menu.containerId, WritingDeskMenu.BUTTON_INSCRIBE);
+        double rx = event.x() - leftPos;
+        double ry = event.y() - topPos;
+
+        if (selectable()) {
+            for (int i = 0; i < CURSES.size(); i++) {
+                if (inBox(rx, ry, BOX_Y0 + i * BOX_PITCH)) {
+                    selectCurse(CURSES.get(i));
+                    return true;
+                }
+            }
+        }
+
+        if (carving.inTablet(rx, ry)) {
+            if (event.hasShiftDown() && menu.retrievable()) {
+                sendButton(WritingDeskMenu.BUTTON_RETRIEVE);
+                return true;
+            }
+            if (menu.bindable()) {
+                sendButton(WritingDeskMenu.BUTTON_BIND);
+                return true;
+            }
+            if (carvable()) {
+                carving.stroke(rx, ry);
                 return true;
             }
         }
+
         return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        if (carvable() && carving.active()) {
+            double rx = event.x() - leftPos;
+            double ry = event.y() - topPos;
+            if (carving.inTablet(rx, ry)) {
+                carving.stroke(rx, ry);
+            } else {
+                carving.endStroke();
+            }
+            return true;
+        }
+        return super.mouseDragged(event, dx, dy);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        carving.endStroke();
+        return super.mouseReleased(event);
+    }
+
+    private void selectCurse(CurseOption option) {
+        if (option == selected) return;
+        selected = option;
+        reagentReady = false;
+        resultSent = false;
+        completedAtNanos = 0L;
+        carving.reset();
+        if (minecraft != null) {
+            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        }
+    }
+
+    @Override
+    public void removed() {
+        setCursorHidden(false);
+        super.removed();
     }
 }

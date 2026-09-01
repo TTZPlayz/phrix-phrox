@@ -63,6 +63,14 @@ public class PPRecipeProvider extends RecipeProvider {
                 .define('L', PPBlocks.LIMESTONE)
                 .unlockedBy(getHasName(PPBlocks.LIMESTONE.get()), has(PPBlocks.LIMESTONE))
                 .save(output);
+        shaped(RecipeCategory.TOOLS, PPBlocks.WRITING_DESK.get())
+                .pattern("PPP")
+                .pattern(" L ")
+                .pattern("PPP")
+                .define('P', PPBlocks.POLISHED_LIMESTONE.get())
+                .define('L', PPBlocks.LIMESTONE.get())
+                .unlockedBy(getHasName(PPBlocks.LIMESTONE.get()), has(PPBlocks.LIMESTONE))
+                .save(output);
 
         oreSmelting(Arrays.asList(PPBlocks.PIPE_REMNANT), RecipeCategory.MISC, CookingBookCategory.MISC, PPItems.LEAD_SCRAP.get(), 0.25f, 100, "lead");
         oreBlasting(Arrays.asList(PPBlocks.PIPE_REMNANT), RecipeCategory.MISC, CookingBookCategory.MISC, PPItems.LEAD_SCRAP.get(), 0.25f, 100, "lead");

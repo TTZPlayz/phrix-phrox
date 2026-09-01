@@ -28,5 +28,52 @@
   "block.phrixphrox.pipe_remnant": "Pipe Remnant",
   "block.phrixphrox.limestone": "Limestone",
   "block.phrixphrox.polished_limestone": "Polished Limestone",
+  "block.phrixphrox.limestone_stairs": "Limestone Stairs",
+  "block.phrixphrox.limestone_slab": "Limestone Slab",
+  "block.phrixphrox.limestone_wall": "Limestone Wall",
+  "block.phrixphrox.polished_limestone_stairs": "Polished Limestone Stairs",
+  "block.phrixphrox.polished_limestone_slab": "Polished Limestone Slab",
+  "block.phrixphrox.polished_limestone_button": "Polished Limestone Button",
+  "block.phrixphrox.polished_limestone_wall": "Polished Limestone Wall",
+
+  "gui.phrixphrox.writing_desk.curse.severed_threads": "Curse of the Severed Threads",
+  "gui.phrixphrox.writing_desk.curse.hollow_voice": "Curse of the Hollow Voice",
+  "gui.phrixphrox.writing_desk.curse.blunder_strike": "Curse of the Blunder-Strike",
+
+  "gui.phrixphrox.writing_desk.inscription.severed_threads.1": "DEAE SVLI MINERVAE",
+  "gui.phrixphrox.writing_desk.inscription.severed_threads.2": "TRADO TIBI QVEMCVNQVE MIHI INIVRIAM FECERIT",
+  "gui.phrixphrox.writing_desk.inscription.severed_threads.2.named": "DONO TIBI NOMEN %s",
+  "gui.phrixphrox.writing_desk.inscription.severed_threads.3": "ROGO VT VINCVLA EIVS CVM CETERIS DIRVMPANTVR",
+  "gui.phrixphrox.writing_desk.inscription.severed_threads.4": "ET AB OMNIBVS VITETVR VT NEMO EVM RECIPIAT",
+  "gui.phrixphrox.writing_desk.inscription.severed_threads.5": "NEC QVISQVAM CVM EO SOCIETATEM HABEAT",
+
+  "gui.phrixphrox.writing_desk.inscription.hollow_voice.1": "DEAE SVLI MINERVAE",
+  "gui.phrixphrox.writing_desk.inscription.hollow_voice.2": "TRADO TIBI VOCEM EIVS QVI MIHI MENTITVS EST",
+  "gui.phrixphrox.writing_desk.inscription.hollow_voice.2.named": "TRADO TIBI DONO TIBI NOMEN %s",
+  "gui.phrixphrox.writing_desk.inscription.hollow_voice.3": "ROGO VT LINGVA EIVS MVTA FIAT",
+  "gui.phrixphrox.writing_desk.inscription.hollow_voice.4": "ET VERBA EIVS IN AVRIBVS OMNIVM PEREANT",
+  "gui.phrixphrox.writing_desk.inscription.hollow_voice.5": "NEC QVISQVAM EI CREDAT",
+
+  "gui.phrixphrox.writing_desk.inscription.blunder_strike.1": "DEAE SVLI MINERVAE",
+  "gui.phrixphrox.writing_desk.inscription.blunder_strike.2": "TRADO TIBI MANVS EIVS QVI ME LAESIT",
+  "gui.phrixphrox.writing_desk.inscription.blunder_strike.2.named": "TRADO TIBI DONO TIBI NOMEN %s",
+  "gui.phrixphrox.writing_desk.inscription.blunder_strike.3": "ROGO VT OMNE FERRVM EIVS FALLAT",
+  "gui.phrixphrox.writing_desk.inscription.blunder_strike.4": "ET ICTVS EIVS IN SE IPSVM CADANT",
+  "gui.phrixphrox.writing_desk.inscription.blunder_strike.5": "NEC VMQVAM DEXTERA EIVS CERTA SIT",
+
+  "tooltip.phrixphrox.inscribed_curse": "Inscribed Curse: %s",
+  "tooltip.phrixphrox.target": "Target: %s",
+  "tooltip.phrixphrox.target.unbound": "Unbound",
+  "tooltip.phrixphrox.needs": "Needs: %s",
+
+  "gui.phrixphrox.curse.escalated.hollow_voice": "You have been permanently silenced\u2026",
+  "gui.phrixphrox.curse.escalated.severed_threads": "Your bonds have been severed\u2026",
+  "gui.phrixphrox.curse.escalated.blunder_strike": "You shall not fail to miss your mark\u2026",
+  "gui.phrixphrox.curse.neutralized": "The curse loosens its grip\u2026",
+  "gui.phrixphrox.curse.blunder_strike.miss": "You seem to have cut yourself...",
+
+  "death.attack.blunder_strike": "%1$s was undone by their own hand",
+  "death.attack.blunder_strike.player": "%1$s was undone by their own hand while fighting %2$s",
+
   "block.phrixphrox.writing_desk": "Writing Desk"
 }

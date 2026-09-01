@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -26,6 +28,31 @@ public class PPBlocks {
             new PipeRemnant(properties.strength(4f).requiresCorrectToolForDrops())
     );
 
+    public static final DeferredBlock<Block> LIMESTONE_STAIRS = registerBlock("limestone_stairs",
+            properties -> new StairBlock(PPBlocks.LIMESTONE.get().defaultBlockState(),
+                    properties.strength(3f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
+    public static final DeferredBlock<Block> LIMESTONE_SLAB = registerBlock("limestone_slab",
+            properties -> new SlabBlock(properties.strength(3f)
+                    .requiresCorrectToolForDrops().sound(SoundType.STONE)));
+
+    public static final DeferredBlock<Block> LIMESTONE_WALL = registerBlock("limestone_wall",
+            properties -> new WallBlock(properties.strength(2F)
+                    .requiresCorrectToolForDrops().sound(SoundType.STONE)));
+
+    public static final DeferredBlock<Block> POLISHED_LIMESTONE_STAIRS = registerBlock("polished_limestone_stairs",
+            properties -> new StairBlock(PPBlocks.POLISHED_LIMESTONE.get().defaultBlockState(),
+                    properties.strength(3f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
+    public static final DeferredBlock<Block> POLISHED_LIMESTONE_SLAB = registerBlock("polished_limestone_slab",
+            properties -> new SlabBlock(properties.strength(3f)
+                    .requiresCorrectToolForDrops().sound(SoundType.STONE)));
+
+    public static final DeferredBlock<Block> POLISHED_LIMESTONE_BUTTON = registerBlock("polished_limestone_button",
+            properties -> new ButtonBlock(BlockSetType.STONE, 20, properties
+                    .noCollision().strength(0.5F).pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<Block> POLISHED_LIMESTONE_WALL = registerBlock("polished_limestone_wall",
+            properties -> new WallBlock(properties.strength(2F)
+                    .requiresCorrectToolForDrops().sound(SoundType.STONE)));
+
     public static final DeferredBlock<Block> WRITING_DESK = registerBlock("writing_desk",
             properties -> new WritingDeskBlock(properties.strength(3F).requiresCorrectToolForDrops()));
 
@@ -33,7 +60,17 @@ public class PPBlocks {
             PIPE_REMNANT,
             LIMESTONE,
             POLISHED_LIMESTONE,
-            WRITING_DESK);
+            WRITING_DESK,
+
+            LIMESTONE_STAIRS,
+            LIMESTONE_SLAB,
+            LIMESTONE_WALL,
+
+            POLISHED_LIMESTONE_STAIRS,
+            POLISHED_LIMESTONE_SLAB,
+            POLISHED_LIMESTONE_BUTTON,
+            POLISHED_LIMESTONE_WALL
+    );
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Function<BlockBehaviour.Properties, T> function) {
         DeferredBlock<T> toReturn = BLOCKS.registerBlock(name, function);

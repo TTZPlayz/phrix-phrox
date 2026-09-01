@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "phrixphrox:block/limestone_slab"
+    },
+    "type=double": {
+      "model": "phrixphrox:block/limestone"
+    },
+    "type=top": {
+      "model": "phrixphrox:block/limestone_slab_top"
+    }
+  }
+}

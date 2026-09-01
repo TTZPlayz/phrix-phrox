@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/button",
+  "textures": {
+    "texture": "phrixphrox:block/polished_limestone"
+  }
+}

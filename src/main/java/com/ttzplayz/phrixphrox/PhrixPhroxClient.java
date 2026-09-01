@@ -1,6 +1,10 @@
 package com.ttzplayz.phrixphrox;
 
+import com.ttzplayz.phrixphrox.block.entity.PPBlockEntities;
+import com.ttzplayz.phrixphrox.client.CurseFlameParticle;
+import com.ttzplayz.phrixphrox.client.WritingDeskRenderer;
 import com.ttzplayz.phrixphrox.menu.PPMenuTypes;
+import com.ttzplayz.phrixphrox.particle.PPParticles;
 import com.ttzplayz.phrixphrox.menu.WritingDeskScreen;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -9,7 +13,9 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
@@ -32,6 +38,16 @@ public class PhrixPhroxClient {
     @SubscribeEvent
     static void onRegisterScreens(RegisterMenuScreensEvent event) {
         event.register(PPMenuTypes.WRITING_DESK_MENU.get(), WritingDeskScreen::new);
+    }
+
+    @SubscribeEvent
+    static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(PPBlockEntities.WRITING_DESK_BE.get(), WritingDeskRenderer::new);
+    }
+
+    @SubscribeEvent
+    static void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(PPParticles.CURSE_FLAME.get(), CurseFlameParticle.Provider::new);
     }
 
     @SubscribeEvent

@@ -17,6 +17,10 @@ public class PPParticles {
             PARTICLE_TYPES.register("curse", () -> new SimpleParticleType(true));
 
 
+    public static final Supplier<SimpleParticleType> CURSE_FLAME =
+            PARTICLE_TYPES.register("curse_flame", () -> new SimpleParticleType(true));
+
+
     public static void register(IEventBus eventBus) {
         PARTICLE_TYPES.register(eventBus);
     }

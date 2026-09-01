@@ -3,10 +3,12 @@ package com.ttzplayz.phrixphrox.block;
 import com.mojang.serialization.MapCodec;
 
 import com.ttzplayz.phrixphrox.block.entity.WritingDeskBlockEntity;
+import com.ttzplayz.phrixphrox.curse.hollow_voice.HollowVoiceCurse;
 import com.ttzplayz.phrixphrox.items.PPItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -88,6 +90,11 @@ public class WritingDeskBlock extends BaseEntityBlock {
                                           Player player, InteractionHand hand, BlockHitResult hitResult) {
 
         if (level.isClientSide()) return InteractionResult.SUCCESS;
+
+        if (HollowVoiceCurse.isMute(player)) {
+            if (player instanceof ServerPlayer serverPlayer) HollowVoiceCurse.notifySilenced(serverPlayer);
+            return InteractionResult.SUCCESS;
+        }
 
         if (level.getBlockEntity(pos) instanceof WritingDeskBlockEntity writingDeskBlockEntity) {
             boolean isWritingDeskEmpty = writingDeskBlockEntity.inventory

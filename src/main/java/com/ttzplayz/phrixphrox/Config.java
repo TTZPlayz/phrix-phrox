@@ -27,6 +27,26 @@ public class Config {
         "A list of items to log on common setup."
     ).defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
 
+    public static final ModConfigSpec.DoubleValue BLUNDER_STRIKE_CHANCE = BUILDER.comment(
+        "Chance that a Blunder-Strike attack lands on the cursed player instead of their target"
+    ).defineInRange("blunderStrikeChance", 0.20, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue BLUNDER_STRIKE_CHANCE_ESCALATED = BUILDER.comment(
+        "The same chance once the curse has worsened"
+    ).defineInRange("blunderStrikeChanceEscalated", 0.50, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue BLUNDER_STRIKE_DAMAGE = BUILDER.comment(
+        "Damage a Blunder-Strike deals to the cursed player"
+    ).defineInRange("blunderStrikeDamage", 2.0, 0.0, 100.0);
+
+    public static final ModConfigSpec.DoubleValue RUNE_COMPLETION = BUILDER.comment(
+        "Fraction of the rune that must be carved before a tablet counts as inscribed"
+    ).defineInRange("runeCompletion", 0.97, 0.1, 1.0);
+
+    public static final ModConfigSpec.BooleanValue EASY_CURSING = BUILDER.comment(
+        "Allow a name tag renamed to a player as a defixion focus, instead of that player's head"
+    ).define("EASY_CURSING", true);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     private static boolean validateItemName(final Object obj) {

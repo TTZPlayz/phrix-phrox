@@ -3,6 +3,13 @@
     "phrixphrox:pipe_remnant",
     "phrixphrox:limestone",
     "phrixphrox:polished_limestone",
-    "phrixphrox:writing_desk"
+    "phrixphrox:writing_desk",
+    "phrixphrox:limestone_stairs",
+    "phrixphrox:limestone_slab",
+    "phrixphrox:limestone_wall",
+    "phrixphrox:polished_limestone_stairs",
+    "phrixphrox:polished_limestone_slab",
+    "phrixphrox:polished_limestone_button",
+    "phrixphrox:polished_limestone_wall"
   ]
 }

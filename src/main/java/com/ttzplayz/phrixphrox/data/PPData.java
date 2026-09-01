@@ -3,6 +3,8 @@ package com.ttzplayz.phrixphrox.data;
 import com.mojang.serialization.Codec;
 import com.ttzplayz.phrixphrox.PhrixPhrox;
 import java.util.function.UnaryOperator;
+import java.util.UUID;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.IEventBus;
@@ -22,6 +24,18 @@ public class PPData {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> CURSED_ITEM_ID = register("cursed-item-id", builder ->
         builder.persistent(Codec.LONG)
+    );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CURSE_TYPE = register("curse-type", builder ->
+        builder.persistent(Codec.intRange(0, 15))
+    );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<UUID>> TARGET_ID = register("target-id", builder ->
+        builder.persistent(UUIDUtil.CODEC)
+    );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> TARGET_NAME = register("target-name", builder ->
+        builder.persistent(Codec.STRING)
     );
 
     private static <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(

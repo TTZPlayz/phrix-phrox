@@ -32,8 +32,18 @@ public class PPModelProvider extends ModelProvider {
         // Blocks
 
         blockModels.createRotatedPillarWithHorizontalVariant(PPBlocks.PIPE_REMNANT.get(), TexturedModel.COLUMN_ALT, TexturedModel.COLUMN_HORIZONTAL_ALT);
-        blockModels.createTrivialCube(PPBlocks.LIMESTONE.get()); //commented out later?
-        blockModels.createTrivialCube(PPBlocks.POLISHED_LIMESTONE.get()); //commented out later?
+//        blockModels.createTrivialCube(PPBlocks.LIMESTONE.get()); //commented out NOW?
+//        blockModels.createTrivialCube(PPBlocks.POLISHED_LIMESTONE.get()); //commented out now.
         blockModels.createNonTemplateHorizontalBlock(PPBlocks.WRITING_DESK.get());
+
+        blockModels.family(PPBlocks.LIMESTONE.get())
+                .stairs(PPBlocks.LIMESTONE_STAIRS.get())
+                .slab(PPBlocks.LIMESTONE_SLAB.get())
+                .wall(PPBlocks.LIMESTONE_WALL.get());
+        blockModels.family(PPBlocks.POLISHED_LIMESTONE.get())
+                .stairs(PPBlocks.POLISHED_LIMESTONE_STAIRS.get())
+                .slab(PPBlocks.POLISHED_LIMESTONE_SLAB.get())
+                .button(PPBlocks.POLISHED_LIMESTONE_BUTTON.get())
+                .wall(PPBlocks.POLISHED_LIMESTONE_WALL.get());
     }
 }
