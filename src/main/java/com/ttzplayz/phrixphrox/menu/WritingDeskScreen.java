@@ -38,6 +38,7 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     private static final Identifier RUNE_TEMPLATE = Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "textures/item/rune_template.png");
     private static final Identifier EMBLEM_GLOW = gui("sulis_icon_small_glowing.png");
     private static final Identifier TABLET_OUTLINE = gui("lead_tablet_outline.png");
+    private static final Identifier SCROLL_BAR = gui("writing_desk_scroll_bar.png");
 
     private static final int TABLET_X0 = 73;
     private static final int TABLET_Y0 = 17;
@@ -71,13 +72,27 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     private static final int LOCKED_COLOR = 0x80202020;
     private static final int WANTED_COLOR = 0x5583E03B;
 
-    private static final int BOX_X0 = 14;
-    private static final int BOX_X1 = 59;
-    private static final int BOX_Y0 = 50;
+    private static final int BOX_X0 = 16;
+    private static final int BOX_X1 = 58;
+    private static final int BOX_Y0 = 49;
     private static final int BOX_PITCH = 11;
     private static final int BOX_HEIGHT = 11;
     private static final int ROW_TEXT_X = 17;
     private static final float ROW_SCALE = 0.4f;
+
+    private static final int VISIBLE_ROWS = 4;
+
+    private static final int FRAME_X = 13;
+    private static final int FRAME_Y = BOX_Y0;
+    private static final int FRAME_W = 50;
+    private static final int FRAME_H = 48;
+
+    private static final int TRACK_X0 = 58;
+    private static final int TRACK_X1 = 62;
+    private static final int TRACK_Y0 = BOX_Y0;
+    private static final int TRACK_Y1 = BOX_Y0 + VISIBLE_ROWS * BOX_PITCH;
+    private static final int THUMB_MIN_HEIGHT = 6;
+    private static final int THUMB_COLOR = 0xAA827866;
 
     private static final float EMBLEM_CX = 37.5f;
     private static final float EMBLEM_CY = 27.5f;
@@ -104,7 +119,10 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     private static final List<CurseOption> CURSES = List.of(
             new CurseOption(CurseInstance.Curse.SeveredThreads, RUNE_TEMPLATE),
             new CurseOption(CurseInstance.Curse.HollowVoice, RUNE_TEMPLATE),
-            new CurseOption(CurseInstance.Curse.BlunderStrike, RUNE_TEMPLATE));
+            new CurseOption(CurseInstance.Curse.BlunderStrike, RUNE_TEMPLATE),
+            new CurseOption(CurseInstance.Curse.SunBurning, RUNE_TEMPLATE),
+            new CurseOption(CurseInstance.Curse.EternalWake, RUNE_TEMPLATE),
+            new CurseOption(CurseInstance.Curse.Maiden, RUNE_TEMPLATE));
 
     private static Identifier gui(String name) {
         return Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "textures/gui/writing_desk/" + name);
@@ -113,6 +131,8 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     private final RuneCarving carving = new RuneCarving(TABLET_X0, TABLET_Y0, TABLET_X1, TABLET_Y1, RUNE_X, RUNE_Y, RUNE_SIZE);
 
     private @Nullable CurseOption selected;
+    private int scrollRow;
+    private boolean draggingThumb;
     private boolean reagentReady;
     private boolean resultSent;
     private boolean cursorHidden;
@@ -300,10 +320,14 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
 
     private void extractCurseList(GuiGraphicsExtractor graphics, int localX, int localY, int screenX, int screenY) {
         int wrapWidth = Math.round((BOX_X1 - 2 - ROW_TEXT_X) / ROW_SCALE);
+        clampScroll();
 
-        for (int i = 0; i < CURSES.size(); i++) {
-            CurseOption option = CURSES.get(i);
-            int y0 = BOX_Y0 + i * BOX_PITCH;
+        for (int row = 0; row < VISIBLE_ROWS; row++) {
+            int index = scrollRow + row;
+            if (index >= CURSES.size()) break;
+
+            CurseOption option = CURSES.get(index);
+            int y0 = BOX_Y0 + row * BOX_PITCH;
             boolean hovered = selectable() && inBox(localX, localY, y0);
 
             if (option == selected) {
@@ -328,6 +352,57 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
                 graphics.setTooltipForNextFrame(font, option.name(), screenX, screenY);
             }
         }
+
+        extractScrollThumb(graphics);
+
+        graphics.blit(RenderPipelines.GUI_TEXTURED, SCROLL_BAR, FRAME_X, FRAME_Y, 0, 0,
+                FRAME_W, FRAME_H, FRAME_W, FRAME_H);
+    }
+
+    private void extractScrollThumb(GuiGraphicsExtractor graphics) {
+        if (maxScroll() == 0) return;
+
+        int thumbHeight = thumbHeight();
+        int y0 = TRACK_Y0 + Math.round(thumbTravel() * scrollRow / (float) maxScroll());
+        graphics.fill(TRACK_X0, y0, TRACK_X1, y0 + thumbHeight, THUMB_COLOR);
+    }
+
+    private static int maxScroll() {
+        return Math.max(0, CURSES.size() - VISIBLE_ROWS);
+    }
+
+    private static int thumbHeight() {
+        int track = TRACK_Y1 - TRACK_Y0;
+        return Math.max(THUMB_MIN_HEIGHT, track * VISIBLE_ROWS / CURSES.size());
+    }
+
+    private static int thumbTravel() {
+        return TRACK_Y1 - TRACK_Y0 - thumbHeight();
+    }
+
+    private void clampScroll() {
+        scrollRow = Mth.clamp(scrollRow, 0, maxScroll());
+    }
+
+    private void scrollTo(int row) {
+        int clamped = Mth.clamp(row, 0, maxScroll());
+        if (clamped != scrollRow) scrollRow = clamped;
+    }
+
+    private void scrollToThumb(double localY) {
+        int travel = thumbTravel();
+        if (travel <= 0) return;
+
+        double fraction = (localY - TRACK_Y0 - thumbHeight() / 2.0) / travel;
+        scrollTo((int) Math.round(fraction * maxScroll()));
+    }
+
+    private static boolean inList(double x, double y) {
+        return x >= BOX_X0 && x < TRACK_X1 && y >= BOX_Y0 && y < TRACK_Y1;
+    }
+
+    private static boolean inTrack(double x, double y) {
+        return x >= TRACK_X0 && x < TRACK_X1 && y >= TRACK_Y0 && y < TRACK_Y1;
     }
 
     private static boolean inBox(double x, double y, int boxY) {
@@ -551,10 +626,17 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
         double rx = event.x() - leftPos;
         double ry = event.y() - topPos;
 
+        if (menu.slotsVisible() && inTrack(rx, ry)) {
+            draggingThumb = true;
+            scrollToThumb(ry);
+            return true;
+        }
+
         if (selectable()) {
-            for (int i = 0; i < CURSES.size(); i++) {
-                if (inBox(rx, ry, BOX_Y0 + i * BOX_PITCH)) {
-                    selectCurse(CURSES.get(i));
+            for (int row = 0; row < VISIBLE_ROWS; row++) {
+                int index = scrollRow + row;
+                if (index < CURSES.size() && inBox(rx, ry, BOX_Y0 + row * BOX_PITCH)) {
+                    selectCurse(CURSES.get(index));
                     return true;
                 }
             }
@@ -579,7 +661,20 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     }
 
     @Override
+    public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
+        if (menu.slotsVisible() && inList(x - leftPos, y - topPos) && scrollY != 0) {
+            scrollTo(scrollRow - (int) Math.signum(scrollY));
+            return true;
+        }
+        return super.mouseScrolled(x, y, scrollX, scrollY);
+    }
+
+    @Override
     public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        if (draggingThumb) {
+            scrollToThumb(event.y() - topPos);
+            return true;
+        }
         if (carvable() && carving.active()) {
             double rx = event.x() - leftPos;
             double ry = event.y() - topPos;
@@ -595,6 +690,7 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
+        draggingThumb = false;
         carving.endStroke();
         return super.mouseReleased(event);
     }

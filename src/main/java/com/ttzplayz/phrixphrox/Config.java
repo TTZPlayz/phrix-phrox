@@ -39,6 +39,14 @@ public class Config {
         "Damage a Blunder-Strike deals to the cursed player"
     ).defineInRange("blunderStrikeDamage", 2.0, 0.0, 100.0);
 
+    public static final ModConfigSpec.DoubleValue ETERNAL_WAKE_WAKE_CHANCE = BUILDER.comment(
+        "Chance that an Eternal Wake night comes apart partway through instead of running to morning"
+    ).defineInRange("eternalWakeWakeChance", 0.40, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue ETERNAL_WAKE_EXHAUSTION = BUILDER.comment(
+        "Extra food exhaustion per tick once Eternal Wake has worsened"
+    ).defineInRange("eternalWakeExhaustion", 0.01, 0.0, 1.0);
+
     public static final ModConfigSpec.DoubleValue RUNE_COMPLETION = BUILDER.comment(
         "Fraction of the rune that must be carved before a tablet counts as inscribed"
     ).defineInRange("runeCompletion", 0.97, 0.1, 1.0);

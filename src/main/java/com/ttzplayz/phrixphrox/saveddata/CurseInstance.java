@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import com.mojang.serialization.Codec;
+import com.ttzplayz.phrixphrox.items.PPItems;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.UUIDUtil;
@@ -17,33 +19,42 @@ import org.jspecify.annotations.Nullable;
 public class CurseInstance {
 
     public enum Curse {
-        HollowVoice("hollow_voice", Items.ECHO_SHARD),
-        SeveredThreads("severed_threads", Items.STRING),
+        HollowVoice("hollow_voice", () -> Items.ECHO_SHARD),
+        SeveredThreads("severed_threads", () -> Items.STRING),
         CrookedPath("crooked_path"),
         WaningFlame("waning_flame"),
         UnmournedGrave("unmourned_grave"),
-        BlunderStrike("blunder_strike", Items.IRON_AXE),
+        BlunderStrike("blunder_strike", () -> Items.IRON_AXE),
         BlindVisions("blind_visions"),
-        EternalWake("eternal_wake"),
+        EternalWake("eternal_wake", () -> Items.PHANTOM_MEMBRANE),
         SuddenStorm("sudden_storm"),
-        SunBurning("sun_burning"),
+        SunBurning("sun_burning", () -> Items.BLAZE_POWDER, 170L * 20L),
         BoundServant("bound_servant"),
         ShiftingSands("shifting_sands"),
         BetrayedSiren("betrayed_siren"),
         ThousandKnives("thousand_knives"),
-        Maiden("maiden");
+        Maiden("maiden", PPItems.LEADEN_FEATHER);
+
+        public static final long DEFAULT_ESCALATION_TICKS = 17L * 60L * 20L;
 
         private final String path;
 
-        private final @Nullable Item reagent;
+        private final @Nullable Supplier<Item> reagent;
+
+        private final long escalationTicks;
 
         Curse(String path) {
-            this(path, null);
+            this(path, null, DEFAULT_ESCALATION_TICKS);
         }
 
-        Curse(String path, @Nullable Item reagent) {
+        Curse(String path, @Nullable Supplier<Item> reagent) {
+            this(path, reagent, DEFAULT_ESCALATION_TICKS);
+        }
+
+        Curse(String path, @Nullable Supplier<Item> reagent, long escalationTicks) {
             this.path = path;
             this.reagent = reagent;
+            this.escalationTicks = escalationTicks;
         }
 
         public String path() {
@@ -51,13 +62,18 @@ public class CurseInstance {
         }
 
         public @Nullable Item reagent() {
-            return reagent;
+            return reagent == null ? null : reagent.get();
+        }
+
+        public long escalationTicks() {
+            return escalationTicks;
         }
 
         public static boolean isReagent(ItemStack stack) {
             if (stack.isEmpty()) return false;
             for (Curse curse : values()) {
-                if (curse.reagent != null && stack.is(curse.reagent)) return true;
+                Item reagent = curse.reagent();
+                if (reagent != null && stack.is(reagent)) return true;
             }
             return false;
         }

@@ -7,6 +7,8 @@ import com.mojang.logging.LogUtils;
 import com.ttzplayz.phrixphrox.block.PPBlocks;
 import com.ttzplayz.phrixphrox.block.entity.PPBlockEntities;
 import com.ttzplayz.phrixphrox.curse.PPEffects;
+import com.ttzplayz.phrixphrox.data.PPAttachments;
+import com.ttzplayz.phrixphrox.entity.PPEntities;
 import com.ttzplayz.phrixphrox.data.PPData;
 import com.ttzplayz.phrixphrox.items.PPCreativeModeTabs;
 import com.ttzplayz.phrixphrox.items.PPItems;
@@ -45,8 +47,10 @@ public class PhrixPhrox {
         PPBlocks.register(modEventBus);
         PPBlockEntities.register(modEventBus);
         PPData.register(modEventBus);
+        PPAttachments.register(modEventBus);
         PPEffects.register(modEventBus);
         PPParticles.register(modEventBus);
+        PPEntities.register(modEventBus);
         PPMenuTypes.register(modEventBus);
 
         PPCreativeModeTabs.CREATIVE_MODE_TABS.register(modEventBus);

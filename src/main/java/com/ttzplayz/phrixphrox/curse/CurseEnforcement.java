@@ -18,6 +18,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.UUID;
@@ -27,7 +28,7 @@ public class CurseEnforcement {
 
     private static final int SCAN_INTERVAL = 20;
 
-    public static final long ESCALATION_TICKS = 17L * 60L * 20L;
+    public static final long ESCALATION_TICKS = CurseInstance.Curse.DEFAULT_ESCALATION_TICKS;
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -54,7 +55,9 @@ public class CurseEnforcement {
                 return;
             }
 
-            if (!curse.isEscalated() && gameTime - curse.activatedAt() >= ESCALATION_TICKS) {
+            CurseInstance.Curse kind = curse.curse();
+            if (!curse.isEscalated() && kind != null
+                    && gameTime - curse.activatedAt() >= kind.escalationTicks()) {
                 escalate(data, curseId, curse, player);
             }
 
@@ -63,6 +66,21 @@ public class CurseEnforcement {
             if (current == null || current.getAmplifier() != stage) {
                 player.addEffect(new MobEffectInstance(effect, MobEffectInstance.INFINITE_DURATION,
                         stage, false, false, false));
+            }
+        });
+    }
+
+    @SubscribeEvent
+    public static void onDeath(LivingDeathEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        ServerLevel level = player.level();
+        PlayerCurseData data = PlayerCurseData.get(level);
+
+        data.forEachAffliction(player.getUUID(), (curseId, curse) -> {
+            CurseInstance.CurseTarget curser = curse.curser();
+            if (curser != null && curser.id().equals(player.getUUID())) {
+                lift(data, curseId, curse, level);
             }
         });
     }

@@ -23,6 +23,7 @@
   "item.phrixphrox.defixion": "Defixion",
   "item.phrixphrox.bound_defixion": "Bound Defixion",
   "item.phrixphrox.cursed_stylus": "Cursed Stylus",
+  "item.phrixphrox.leaden_feather": "?????",
 
 
   "block.phrixphrox.pipe_remnant": "Pipe Remnant",
@@ -39,6 +40,9 @@
   "gui.phrixphrox.writing_desk.curse.severed_threads": "Curse of the Severed Threads",
   "gui.phrixphrox.writing_desk.curse.hollow_voice": "Curse of the Hollow Voice",
   "gui.phrixphrox.writing_desk.curse.blunder_strike": "Curse of the Blunder-Strike",
+  "gui.phrixphrox.writing_desk.curse.sun_burning": "Curse of the Sun-Burning",
+  "gui.phrixphrox.writing_desk.curse.eternal_wake": "Curse of the Eternal Wake",
+  "gui.phrixphrox.writing_desk.curse.maiden": "Curse of the \u2588\u2588\u2588\u2588\u2588\u2588",
 
   "gui.phrixphrox.writing_desk.inscription.severed_threads.1": "DEAE SVLI MINERVAE",
   "gui.phrixphrox.writing_desk.inscription.severed_threads.2": "TRADO TIBI QVEMCVNQVE MIHI INIVRIAM FECERIT",
@@ -61,6 +65,27 @@
   "gui.phrixphrox.writing_desk.inscription.blunder_strike.4": "ET ICTVS EIVS IN SE IPSVM CADANT",
   "gui.phrixphrox.writing_desk.inscription.blunder_strike.5": "NEC VMQVAM DEXTERA EIVS CERTA SIT",
 
+  "gui.phrixphrox.writing_desk.inscription.sun_burning.1": "DEAE SVLI MINERVAE",
+  "gui.phrixphrox.writing_desk.inscription.sun_burning.2": "TRADO TIBI CVTEM EIVS QVI ME COMBVSSIT",
+  "gui.phrixphrox.writing_desk.inscription.sun_burning.2.named": "TRADO TIBI DONO TIBI NOMEN %s",
+  "gui.phrixphrox.writing_desk.inscription.sun_burning.3": "ROGO VT SOL CARNEM EIVS EXVRAT",
+  "gui.phrixphrox.writing_desk.inscription.sun_burning.4": "ET NVLLA AQVA FLAMMAS EXTINGVAT",
+  "gui.phrixphrox.writing_desk.inscription.sun_burning.5": "NEC VMBRAM VLLAM INVENIAT",
+
+  "gui.phrixphrox.writing_desk.inscription.eternal_wake.1": "DEAE SVLI MINERVAE",
+  "gui.phrixphrox.writing_desk.inscription.eternal_wake.2": "TRADO TIBI SOMNVM EIVS QVI ME VIGILARE COEGIT",
+  "gui.phrixphrox.writing_desk.inscription.eternal_wake.2.named": "TRADO TIBI DONO TIBI NOMEN %s",
+  "gui.phrixphrox.writing_desk.inscription.eternal_wake.3": "ROGO VT OCVLI EIVS NVMQVAM CLAVDANTVR",
+  "gui.phrixphrox.writing_desk.inscription.eternal_wake.4": "ET NOCTE VMBRAE ALATAE EVM PETANT",
+  "gui.phrixphrox.writing_desk.inscription.eternal_wake.5": "NEC VLLVM CVBILE EI REQVIEM DET",
+
+  "gui.phrixphrox.writing_desk.inscription.maiden.1": "DEAE SVLI MINERVAE",
+  "gui.phrixphrox.writing_desk.inscription.maiden.2": "TRADO TIBI \u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588",
+  "gui.phrixphrox.writing_desk.inscription.maiden.2.named": "TRADO TIBI \u2588\u2588\u2588\u2588\u2588 NOMEN %s",
+  "gui.phrixphrox.writing_desk.inscription.maiden.3": "ROGO VT \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588",
+  "gui.phrixphrox.writing_desk.inscription.maiden.4": "ET \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588",
+  "gui.phrixphrox.writing_desk.inscription.maiden.5": "NEC \u2588\u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588",
+
   "tooltip.phrixphrox.inscribed_curse": "Inscribed Curse: %s",
   "tooltip.phrixphrox.target": "Target: %s",
   "tooltip.phrixphrox.target.unbound": "Unbound",
@@ -69,11 +94,24 @@
   "gui.phrixphrox.curse.escalated.hollow_voice": "You have been permanently silenced\u2026",
   "gui.phrixphrox.curse.escalated.severed_threads": "Your bonds have been severed\u2026",
   "gui.phrixphrox.curse.escalated.blunder_strike": "You shall not fail to miss your mark\u2026",
+  "gui.phrixphrox.curse.escalated.sun_burning": "The sun chars you with its burning gaze.",
+  "gui.phrixphrox.curse.escalated.eternal_wake": "There is no place of rest for you\u2026",
   "gui.phrixphrox.curse.neutralized": "The curse loosens its grip\u2026",
   "gui.phrixphrox.curse.blunder_strike.miss": "You seem to have cut yourself...",
 
+  "gui.phrixphrox.curse.sun_burning.warning.1": "Your skin begins to feel dry\u2026",
+  "gui.phrixphrox.curse.sun_burning.warning.2": "Is it just you, or does it feel hot in here?",
+  "gui.phrixphrox.curse.sun_burning.warning.3": "Your face tingles under the blazing sun\u2026",
+  "gui.phrixphrox.curse.sun_burning.unquenchable": "Seems like water is of no use here\u2026",
+
+  "gui.phrixphrox.curse.eternal_wake.startled": "Seems you\u2019ve woken up suddenly\u2026",
+  "gui.phrixphrox.curse.eternal_wake.restless": "Your mind doesn\u2019t feel clear enough\u2026",
+  "gui.phrixphrox.curse.eternal_wake.denied": "There is no place of rest for you\u2026",
+
   "death.attack.blunder_strike": "%1$s was undone by their own hand",
   "death.attack.blunder_strike.player": "%1$s was undone by their own hand while fighting %2$s",
+
+  "entity.phrixphrox.leaden_servant": "Leaden Servant",
 
   "block.phrixphrox.writing_desk": "Writing Desk"
 }

@@ -35,11 +35,17 @@ public class PPEffects {
             () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
     public static final Holder<MobEffect> TIMELOCKED_CLOCKMAKER = MOB_EFFECTS.register("timelocked_clockmaker",
             () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
+    public static final Holder<MobEffect> SUN_BURNING = MOB_EFFECTS.register("sun_burning",
+            () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
+    public static final Holder<MobEffect> ETERNAL_WAKE = MOB_EFFECTS.register("eternal_wake",
+            () -> new CurseEffect(PPParticles.CURSE_PARTICLE.get()));
 
     public static final List<Holder<MobEffect>> ALL_CURSES = Arrays.asList(
             HOLLOW_VOICE,
             SEVERED_THREADS,
-            BLUNDER_STRIKE
+            BLUNDER_STRIKE,
+            SUN_BURNING,
+            ETERNAL_WAKE
     );
 
 
@@ -49,6 +55,8 @@ public class PPEffects {
             case HollowVoice -> HOLLOW_VOICE;
             case SeveredThreads -> SEVERED_THREADS;
             case BlunderStrike -> BLUNDER_STRIKE;
+            case SunBurning -> SUN_BURNING;
+            case EternalWake -> ETERNAL_WAKE;
             default -> null;
         };
     }

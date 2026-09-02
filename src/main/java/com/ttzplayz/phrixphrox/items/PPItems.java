@@ -61,6 +61,7 @@ public class PPItems {
     public static final DeferredItem<Item> CURSED_STYLUS = ITEMS.registerSimpleItem("cursed_stylus");
     public static final DeferredItem<Item> DEFIXION = ITEMS.registerItem("defixion", (properties) -> new Defixion(properties));
     public static final DeferredItem<Item> LEAD_TABLET = ITEMS.registerSimpleItem("lead_tablet");
+    public static final DeferredItem<Item> LEADEN_FEATHER = ITEMS.registerSimpleItem("leaden_feather");
 
     public static final List<DeferredItem<Item>> ALL_ITEMS = Arrays.asList(
 
@@ -68,6 +69,7 @@ public class PPItems {
 
         CURSED_STYLUS,
         LEAD_TABLET,
+        LEADEN_FEATHER,
         DEFIXION,
         BOUND_DEFIXION,
 
@@ -92,6 +94,7 @@ public class PPItems {
         BOUND_DEFIXION,
         CURSED_STYLUS,
         LEAD_TABLET,
+        LEADEN_FEATHER,
 
         LEAD_INGOT,
         LEAD_SCRAP,

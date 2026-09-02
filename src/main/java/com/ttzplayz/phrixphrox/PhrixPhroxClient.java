@@ -2,6 +2,11 @@ package com.ttzplayz.phrixphrox;
 
 import com.ttzplayz.phrixphrox.block.entity.PPBlockEntities;
 import com.ttzplayz.phrixphrox.client.CurseFlameParticle;
+import com.ttzplayz.phrixphrox.client.CursedFlames;
+import com.ttzplayz.phrixphrox.client.LeadenServantModel;
+import com.ttzplayz.phrixphrox.client.LeadenServantRenderer;
+import com.ttzplayz.phrixphrox.entity.PPEntities;
+import com.ttzplayz.phrixphrox.data.PPAttachments;
 import com.ttzplayz.phrixphrox.client.WritingDeskRenderer;
 import com.ttzplayz.phrixphrox.menu.PPMenuTypes;
 import com.ttzplayz.phrixphrox.particle.PPParticles;
@@ -16,6 +21,11 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
+import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.minecraft.client.entity.ClientAvatarEntity;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.world.entity.Avatar;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
@@ -43,11 +53,27 @@ public class PhrixPhroxClient {
     @SubscribeEvent
     static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(PPBlockEntities.WRITING_DESK_BE.get(), WritingDeskRenderer::new);
+        event.registerEntityRenderer(PPEntities.LEADEN_SERVANT.get(), LeadenServantRenderer::new);
+    }
+
+    @SubscribeEvent
+    static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(LeadenServantModel.LAYER, LeadenServantModel::createBodyLayer);
     }
 
     @SubscribeEvent
     static void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(PPParticles.CURSE_FLAME.get(), CurseFlameParticle.Provider::new);
+    }
+
+    @SubscribeEvent
+    static void onRegisterRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
+        event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
+            @Override
+            public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState renderState) {
+                renderState.setRenderData(CursedFlames.KEY, PPAttachments.hasCursedFlames(avatar));
+            }
+        });
     }
 
     @SubscribeEvent
