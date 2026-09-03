@@ -4,17 +4,21 @@ import com.ttzplayz.phrixphrox.PhrixPhrox;
 import com.ttzplayz.phrixphrox.data.PPAttachments;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 
 public class CursedFlames {
 
-    public static final int NORMAL_TINT = -1;
-    public static final int CURSED_TINT = 0xFF33FF4D;
+    public static final int CURSE_GREEN = 0xD9FF63;
 
-    public static final int OVERLAY_TINT = -436207617;
-    public static final int CURSED_OVERLAY_TINT = 0xE633FF4D;
+    public static final SpriteId CURSED_FIRE_0 =
+            Sheets.BLOCKS_MAPPER.apply(Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "cursed_fire_0"));
+    public static final SpriteId CURSED_FIRE_1 =
+            Sheets.BLOCKS_MAPPER.apply(Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "cursed_fire_1"));
 
     public static final ContextKey<Boolean> KEY = new ContextKey<>(
             Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "cursed_flames"));
@@ -23,8 +27,12 @@ public class CursedFlames {
         return Boolean.TRUE.equals(state.getRenderData(KEY));
     }
 
-    public static int localOverlayTint(int original) {
+    public static boolean isLocalCursed() {
         LocalPlayer player = Minecraft.getInstance().player;
-        return player != null && PPAttachments.hasCursedFlames(player) ? CURSED_OVERLAY_TINT : original;
+        return player != null && PPAttachments.hasCursedFlames(player);
+    }
+
+    public static TextureAtlasSprite sprite(SpriteId id) {
+        return Minecraft.getInstance().getAtlasManager().get(id);
     }
 }

@@ -20,15 +20,16 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @EventBusSubscriber
 public class CurseEnforcement {
 
     private static final int SCAN_INTERVAL = 20;
-
-    public static final long ESCALATION_TICKS = CurseInstance.Curse.DEFAULT_ESCALATION_TICKS;
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -101,16 +102,52 @@ public class CurseEnforcement {
         }
     }
 
-    private static void lift(PlayerCurseData data, Long curseId, CurseInstance curse, ServerLevel level) {
-        if (!data.neutralize(curseId)) return;
+    public static long inflict(ServerLevel level, ServerPlayer target, CurseInstance.Curse kind,
+                               @Nullable ServerPlayer curser) {
+        PlayerCurseData data = PlayerCurseData.get(level);
+
+        long curseId;
+        do {
+            curseId = level.getRandom().nextLong();
+        } while (data.curse(curseId) != null);
+
+        data.newCurse(curseId, kind.ordinal());
+        if (curser != null) {
+            data.setCurser(curseId, curser.getUUID(), curser.getGameProfile().name());
+        }
+        data.addPlayerToCurse(curseId, target.getUUID(), target.getGameProfile().name());
+        data.activate(curseId, level.getGameTime());
+        return curseId;
+    }
+
+    public static int liftCurses(ServerLevel level, ServerPlayer target, CurseInstance.Curse kind) {
+        PlayerCurseData data = PlayerCurseData.get(level);
+
+        List<Long> matches = new ArrayList<>();
+        data.forEachAffliction(target.getUUID(), (curseId, curse) -> {
+            if (curse.curse() == kind) matches.add(curseId);
+        });
+
+        int lifted = 0;
+        for (Long curseId : matches) {
+            CurseInstance curse = data.curse(curseId);
+            if (curse != null && lift(data, curseId, curse, level)) lifted++;
+        }
+        return lifted;
+    }
+
+    private static boolean lift(PlayerCurseData data, Long curseId, CurseInstance curse, ServerLevel level) {
+        if (!data.neutralize(curseId)) return false;
 
         Holder<MobEffect> effect = PPEffects.effectFor(curse.curse());
         for (CurseInstance.CurseTarget target : curse.targets()) {
-            if (!(level.getPlayerByUUID(target.id()) instanceof ServerPlayer victim)) continue;
+            ServerPlayer victim = level.getServer().getPlayerList().getPlayer(target.id());
+            if (victim == null) continue;
             if (effect != null) victim.removeEffect(effect);
             victim.sendSystemMessage(Component.translatable("gui.phrixphrox.curse.neutralized")
                     .withStyle(ChatFormatting.GREEN), true);
         }
+        return true;
     }
 
     private static boolean carriesCursedItem(ServerPlayer player, Long curseId) {

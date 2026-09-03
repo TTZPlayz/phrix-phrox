@@ -6,6 +6,7 @@ import static net.minecraft.world.item.Items.*;
 import com.mojang.logging.LogUtils;
 import com.ttzplayz.phrixphrox.block.PPBlocks;
 import com.ttzplayz.phrixphrox.block.entity.PPBlockEntities;
+import com.ttzplayz.phrixphrox.commands.PPCommands;
 import com.ttzplayz.phrixphrox.curse.PPEffects;
 import com.ttzplayz.phrixphrox.data.PPAttachments;
 import com.ttzplayz.phrixphrox.entity.PPEntities;
@@ -25,6 +26,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
@@ -105,5 +107,10 @@ public class PhrixPhrox {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         event.getServer().getDataStorage().computeIfAbsent(PlayerCurseData.ID);
+    }
+
+    @SubscribeEvent
+    public void onRegisterCommands(RegisterCommandsEvent event) {
+        PPCommands.register(event.getDispatcher());
     }
 }

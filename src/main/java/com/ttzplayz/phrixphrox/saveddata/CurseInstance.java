@@ -90,6 +90,13 @@ public class CurseInstance {
             Curse[] all = values();
             return ordinal >= 0 && ordinal < all.length ? all[ordinal] : null;
         }
+
+        public static @Nullable Curse byPath(String path) {
+            for (Curse curse : values()) {
+                if (curse.path.equals(path)) return curse;
+            }
+            return null;
+        }
     }
 
     public record CurseTarget(UUID id, String name) {

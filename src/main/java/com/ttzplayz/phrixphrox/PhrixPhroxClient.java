@@ -1,7 +1,6 @@
 package com.ttzplayz.phrixphrox;
 
 import com.ttzplayz.phrixphrox.block.entity.PPBlockEntities;
-import com.ttzplayz.phrixphrox.client.CurseFlameParticle;
 import com.ttzplayz.phrixphrox.client.CursedFlames;
 import com.ttzplayz.phrixphrox.client.LeadenServantModel;
 import com.ttzplayz.phrixphrox.client.LeadenServantRenderer;
@@ -11,8 +10,16 @@ import com.ttzplayz.phrixphrox.client.WritingDeskRenderer;
 import com.ttzplayz.phrixphrox.menu.PPMenuTypes;
 import com.ttzplayz.phrixphrox.particle.PPParticles;
 import com.ttzplayz.phrixphrox.menu.WritingDeskScreen;
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.platform.BlendFactor;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.FlameParticle;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -35,6 +42,17 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 @EventBusSubscriber(modid = PhrixPhrox.MOD_ID, value = Dist.CLIENT)
 public class PhrixPhroxClient {
 
+    public static final RenderPipeline SUN_EYE_PIPELINE = RenderPipelines.CELESTIAL.toBuilder()
+            .withLocation(Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "pipeline/sun_eye"))
+            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+            .build();
+
+    public static final RenderPipeline CURSED_SUN_MASK_PIPELINE = RenderPipelines.CELESTIAL.toBuilder()
+            .withLocation(Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "pipeline/cursed_sun_mask"))
+            .withColorTargetState(new ColorTargetState(new BlendFunction(
+                    BlendFactor.ZERO, BlendFactor.ONE_MINUS_SRC_COLOR, BlendFactor.ONE, BlendFactor.ZERO)))
+            .build();
+
     public PhrixPhroxClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
@@ -43,6 +61,12 @@ public class PhrixPhroxClient {
             IConfigScreenFactory.class,
             ConfigurationScreen::new
         );
+    }
+
+    @SubscribeEvent
+    static void onRegisterRenderPipelines(RegisterRenderPipelinesEvent event) {
+        event.registerPipeline(SUN_EYE_PIPELINE);
+        event.registerPipeline(CURSED_SUN_MASK_PIPELINE);
     }
 
     @SubscribeEvent
@@ -63,7 +87,7 @@ public class PhrixPhroxClient {
 
     @SubscribeEvent
     static void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(PPParticles.CURSE_FLAME.get(), CurseFlameParticle.Provider::new);
+        event.registerSpriteSet(PPParticles.CURSE_FLAME.get(), FlameParticle.Provider::new);
     }
 
     @SubscribeEvent

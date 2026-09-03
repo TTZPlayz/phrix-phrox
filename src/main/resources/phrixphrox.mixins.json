@@ -7,7 +7,9 @@
   ],
   "client": [
     "client.FlameFeatureRendererMixin",
-    "client.ScreenEffectRendererMixin"
+    "client.ScreenEffectRendererMixin",
+    "client.SkyRendererMixin",
+    "client.LightmapRenderStateExtractorMixin"
   ],
   "injectors": {
     "defaultRequire": 1
