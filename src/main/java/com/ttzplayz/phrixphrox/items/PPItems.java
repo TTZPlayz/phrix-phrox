@@ -69,7 +69,6 @@ public class PPItems {
 
         CURSED_STYLUS,
         LEAD_TABLET,
-        LEADEN_FEATHER,
         DEFIXION,
         BOUND_DEFIXION,
 
@@ -94,14 +93,14 @@ public class PPItems {
         BOUND_DEFIXION,
         CURSED_STYLUS,
         LEAD_TABLET,
-        LEADEN_FEATHER,
 
         LEAD_INGOT,
         LEAD_SCRAP,
         PEWTER_INGOT,
         PLUMBOUS_MIXTURE,
 
-        PEWTER_UPGRADE_TEMPLATE
+        PEWTER_UPGRADE_TEMPLATE,
+        LEADEN_FEATHER
     );
 
     public static final List<DeferredItem<Item>> TOOL_ITEMS = Arrays.asList(

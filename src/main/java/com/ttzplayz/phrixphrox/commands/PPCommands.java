@@ -28,7 +28,9 @@ public class PPCommands {
 
     private static final SuggestionProvider<CommandSourceStack> CURSE_NAMES = (context, builder) ->
             SharedSuggestionProvider.suggest(
-                    Arrays.stream(CurseInstance.Curse.values()).map(CurseInstance.Curse::path), builder);
+                    Arrays.stream(CurseInstance.Curse.values())
+                            .filter(CurseInstance.Curse::selectable)
+                            .map(CurseInstance.Curse::path), builder);
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("curse")
@@ -86,7 +88,7 @@ public class PPCommands {
             throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, CURSE);
         CurseInstance.Curse kind = CurseInstance.Curse.byPath(name);
-        if (kind == null) throw UNKNOWN_CURSE.create(name);
+        if (kind == null || !kind.selectable()) throw UNKNOWN_CURSE.create(name);
         return kind;
     }
 }

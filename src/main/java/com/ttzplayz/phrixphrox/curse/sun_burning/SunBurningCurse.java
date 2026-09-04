@@ -11,6 +11,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -101,7 +103,25 @@ public class SunBurningCurse {
         if (!level.isBrightOutside()) return false;
 
         BlockPos eye = BlockPos.containing(player.getX(), player.getEyeY(), player.getZ());
-        return level.canSeeSky(eye) && !level.isRainingAt(eye);
+        if (level.canSeeSky(eye)) return !level.isRainingAt(eye);
+
+        BlockPos surface = surfaceAbove(level, eye);
+        return surface != null && !level.isRainingAt(surface);
+    }
+
+    private static BlockPos surfaceAbove(Level level, BlockPos pos) {
+        int surfaceY = level.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ());
+        if (pos.getY() >= surfaceY) return null;
+
+        BlockPos.MutableBlockPos cursor = pos.mutable();
+        for (int y = pos.getY(); y < surfaceY; y++) {
+            cursor.setY(y);
+            BlockState state = level.getBlockState(cursor);
+            if (state.getLightDampening() > 0 && state.getFluidState().isEmpty()) return null;
+        }
+
+        BlockPos surface = new BlockPos(pos.getX(), surfaceY, pos.getZ());
+        return level.canSeeSky(surface) ? surface : null;
     }
 
     @SubscribeEvent

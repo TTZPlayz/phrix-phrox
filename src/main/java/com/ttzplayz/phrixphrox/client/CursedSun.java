@@ -13,6 +13,7 @@ public class CursedSun {
 
     public static final int SUN_TINT = CursedFlames.CURSE_GREEN;
     public static final int SKY_LIGHT_TINT = CursedFlames.CURSE_GREEN;
+    public static final int SUNRISE_SUNSET_TINT = CursedFlames.CURSE_GREEN;
 
     public static final float SUN_HEIGHT = 100.0F;
     public static final float SUN_QUAD_SIZE = 30.0F;
@@ -49,6 +50,10 @@ public class CursedSun {
 
     public static boolean tintsSkyLight() {
         return isEscalated() && isDaytime();
+    }
+
+    public static int sunriseAndSunsetTint(int original) {
+        return ARGB.color(ARGB.alpha(original), SUNRISE_SUNSET_TINT);
     }
 
     public static Vector4f greenTint(float alpha) {

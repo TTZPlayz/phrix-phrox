@@ -16,9 +16,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.ttzplayz.phrixphrox.PhrixPhroxClient;
 import com.ttzplayz.phrixphrox.client.CursedSun;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SkyRenderer;
+import net.minecraft.client.renderer.state.level.SkyRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix4f;
@@ -61,6 +64,14 @@ public class SkyRendererMixin {
                         .createBuffer(() -> "Cursed sun quad", 32, mesh.vertexBuffer());
             }
         }
+    }
+
+    @Inject(method = "extractRenderState", at = @At("RETURN"))
+    private void phrixphrox$tintSunriseAndSunset(ClientLevel level, float partialTicks, Camera camera,
+                                                 SkyRenderState state, CallbackInfo callback) {
+        if (!CursedSun.isEscalated()) return;
+
+        state.sunriseAndSunsetColor = CursedSun.sunriseAndSunsetTint(state.sunriseAndSunsetColor);
     }
 
     @Inject(method = "renderSun", at = @At("HEAD"), cancellable = true)

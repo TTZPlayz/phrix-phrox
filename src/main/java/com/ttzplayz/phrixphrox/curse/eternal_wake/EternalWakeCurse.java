@@ -4,21 +4,19 @@ import com.ttzplayz.phrixphrox.Config;
 import com.ttzplayz.phrixphrox.curse.PPEffects;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,10 +27,6 @@ public class EternalWakeCurse {
 
     private static final int WAKE_DELAY_MIN = 40;
     private static final int WAKE_DELAY_MAX = 160;
-
-    private static final int PHANTOM_INTERVAL = 20;
-    private static final double PHANTOM_RADIUS_XZ = 40.0;
-    private static final double PHANTOM_RADIUS_Y = 64.0;
 
     private static final long NO_WAKE = 0L;
 
@@ -63,14 +57,14 @@ public class EternalWakeCurse {
         if (event.getProblem() != null) return;
 
         if (isSleepless(player)) {
-            event.setProblem(problem("denied"));
+            event.setProblem(problem("no_sleep"));
             return;
         }
 
         long gameTime = player.level().getGameTime();
         Vigil vigil = vigils.getOrDefault(player.getUUID(), Vigil.NONE);
         if (gameTime < vigil.restlessUntil()) {
-            event.setProblem(problem("restless"));
+            event.setProblem(problem("cant_sleep"));
             return;
         }
 
@@ -97,10 +91,15 @@ public class EternalWakeCurse {
         if (!isSleepless(player) || !player.isAlive()) return;
 
         player.causeFoodExhaustion((float) Config.ETERNAL_WAKE_EXHAUSTION.getAsDouble());
+    }
 
-        if (player.tickCount % PHANTOM_INTERVAL == 0) {
-            drawPhantoms(player);
-        }
+    @SubscribeEvent
+    public static void onSpawnPhantoms(PlayerSpawnPhantomsEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!isSleepless(player)) return;
+        if (!event.shouldSpawnPhantoms(player.level(), player.blockPosition())) return;
+
+        event.setResult(PlayerSpawnPhantomsEvent.Result.ALLOW);
     }
 
     private static void breakSleep(ServerPlayer player) {
@@ -119,16 +118,6 @@ public class EternalWakeCurse {
         vigils.put(player.getUUID(), vigil.restingUntil(gameTime + RESTLESS_TICKS));
         player.sendSystemMessage(Component.translatable("gui.phrixphrox.curse.eternal_wake.startled")
                 .withStyle(ChatFormatting.DARK_AQUA), true);
-    }
-
-    private static void drawPhantoms(ServerPlayer player) {
-        ServerLevel level = player.level();
-        List<Phantom> phantoms = level.getEntitiesOfClass(Phantom.class,
-                player.getBoundingBox().inflate(PHANTOM_RADIUS_XZ, PHANTOM_RADIUS_Y, PHANTOM_RADIUS_XZ));
-
-        for (Phantom phantom : phantoms) {
-            if (phantom.getTarget() != player) phantom.setTarget(player);
-        }
     }
 
     @SubscribeEvent

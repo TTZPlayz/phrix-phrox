@@ -1,0 +1,26 @@
+{
+  "criteria": {
+    "installed": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "phrixphrox:block/polished_limestone",
+    "description": {
+      "translate": "advancements.phrixphrox.root.description"
+    },
+    "icon": {
+      "id": "phrixphrox:defixion"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "advancements.phrixphrox.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "installed"
+    ]
+  ]
+}

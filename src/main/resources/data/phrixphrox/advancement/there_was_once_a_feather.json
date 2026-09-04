@@ -1,0 +1,33 @@
+{
+  "parent": "phrixphrox:root",
+  "criteria": {
+    "leaden_feather": {
+      "conditions": {
+        "items": [
+          {
+            "items": "phrixphrox:leaden_feather"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.phrixphrox.there_was_once_a_feather.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "id": "phrixphrox:leaden_feather"
+    },
+    "title": {
+      "translate": "advancements.phrixphrox.there_was_once_a_feather.title"
+    }
+  },
+  "requirements": [
+    [
+      "leaden_feather"
+    ]
+  ]
+}

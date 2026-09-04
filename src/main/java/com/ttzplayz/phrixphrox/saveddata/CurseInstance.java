@@ -1,6 +1,7 @@
 package com.ttzplayz.phrixphrox.saveddata;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -67,6 +68,19 @@ public class CurseInstance {
 
         public long escalationTicks() {
             return escalationTicks;
+        }
+
+        private static final EnumSet<Curse> SELECTABLE =
+                EnumSet.of(HollowVoice, SeveredThreads, BlunderStrike, EternalWake, SunBurning, Maiden);
+
+        private static final EnumSet<Curse> SECRET = EnumSet.of(Maiden);
+
+        public boolean selectable() {
+            return SELECTABLE.contains(this);
+        }
+
+        public boolean secret() {
+            return SECRET.contains(this);
         }
 
         public static boolean isReagent(ItemStack stack) {

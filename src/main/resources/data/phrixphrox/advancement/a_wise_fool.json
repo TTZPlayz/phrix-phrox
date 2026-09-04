@@ -1,0 +1,31 @@
+{
+  "parent": "phrixphrox:root",
+  "criteria": {
+    "writing_desk": {
+      "conditions": {
+        "items": [
+          {
+            "items": "phrixphrox:writing_desk"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.phrixphrox.a_wise_fool.description"
+    },
+    "icon": {
+      "id": "phrixphrox:writing_desk"
+    },
+    "title": {
+      "translate": "advancements.phrixphrox.a_wise_fool.title"
+    }
+  },
+  "requirements": [
+    [
+      "writing_desk"
+    ]
+  ]
+}

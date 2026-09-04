@@ -1,9 +1,13 @@
 package com.ttzplayz.phrixphrox.menu;
 
 import com.ttzplayz.phrixphrox.PhrixPhrox;
+import com.ttzplayz.phrixphrox.client.CursedFlames;
 import com.ttzplayz.phrixphrox.data.PPData;
+import com.ttzplayz.phrixphrox.items.Defixion;
 import com.ttzplayz.phrixphrox.items.PPItems;
 import com.ttzplayz.phrixphrox.saveddata.CurseInstance;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -14,6 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -25,7 +30,9 @@ import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> {
@@ -57,9 +64,12 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     private static final float SCALE_STEP = 0.01f;
     private static final float SCALE_FLOOR = 0.2f;
 
-    private static final int READOUT_Y = WritingDeskMenu.TABLET_SLOT_Y + 22;
+    private static final int READOUT_Y = TABLET_Y0 + 2;
     private static final int READOUT_HEIGHT = TABLET_Y1 - 2 - READOUT_Y;
     private static final float READOUT_SCALE_MAX = 0.6f;
+    private static final int READOUT_COLOR = CursedFlames.CURSE_GREEN;
+    private static final long READOUT_HOLD_NANOS = 1_000_000_000L;
+    private static final long READOUT_FADE_NANOS = 400_000_000L;
 
     private static final int STYLUS_SIZE = 16;
     private static final int STYLUS_OFFSET_X = -1;
@@ -108,7 +118,7 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     private static final int INSCRIPTION_LINES = 5;
     private static final int NAMED_LINE = 2;
 
-    private record CurseOption(CurseInstance.Curse curse, Identifier rune) {
+    private record CurseOption(CurseInstance.Curse curse) {
         Component name() {
             return Component.translatable(curse.nameKey());
         }
@@ -117,12 +127,12 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     private record FittedText(float scale, List<String> lines, int chars) {}
 
     private static final List<CurseOption> CURSES = List.of(
-            new CurseOption(CurseInstance.Curse.SeveredThreads, RUNE_TEMPLATE),
-            new CurseOption(CurseInstance.Curse.HollowVoice, RUNE_TEMPLATE),
-            new CurseOption(CurseInstance.Curse.BlunderStrike, RUNE_TEMPLATE),
-            new CurseOption(CurseInstance.Curse.SunBurning, RUNE_TEMPLATE),
-            new CurseOption(CurseInstance.Curse.EternalWake, RUNE_TEMPLATE),
-            new CurseOption(CurseInstance.Curse.Maiden, RUNE_TEMPLATE));
+            new CurseOption(CurseInstance.Curse.SeveredThreads),
+            new CurseOption(CurseInstance.Curse.HollowVoice),
+            new CurseOption(CurseInstance.Curse.BlunderStrike),
+            new CurseOption(CurseInstance.Curse.SunBurning),
+            new CurseOption(CurseInstance.Curse.EternalWake),
+            new CurseOption(CurseInstance.Curse.Maiden));
 
     private static Identifier gui(String name) {
         return Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID, "textures/gui/writing_desk/" + name);
@@ -137,6 +147,9 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     private boolean resultSent;
     private boolean cursorHidden;
     private long completedAtNanos;
+    private long finishedAtNanos;
+    private List<CurseOption> visible = CURSES;
+    private final Map<CurseInstance.Curse, Identifier> runes = new EnumMap<>(CurseInstance.Curse.class);
 
     private @Nullable List<Component> cachedSource;
     private @Nullable FittedText cachedFit;
@@ -211,7 +224,7 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
                     }
                 }
             }
-            case INSCRIBED -> extractInscribedDefixion(graphics);
+            case INSCRIBED -> extractInscribedDefixion(graphics, localX, localY, xm, ym);
             case FINISHED -> extractReadout(graphics);
             default -> { }
         }
@@ -226,13 +239,13 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
     }
 
     private void syncSelection() {
+        visible = computeVisible();
+        trackFinished();
+
+        if (selected != null && !visible.contains(selected)) forgetSelection();
+
         if (!selectable()) {
-            if (selected != null) {
-                selected = null;
-                resultSent = false;
-                completedAtNanos = 0L;
-                carving.reset();
-            }
+            forgetSelection();
             reagentReady = false;
             return;
         }
@@ -244,9 +257,55 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
         completedAtNanos = 0L;
         resultSent = false;
         if (ready) {
-            carving.begin(selected.rune());
+            carving.begin(rune(selected.curse()));
         } else {
             carving.reset();
+        }
+    }
+
+    private void forgetSelection() {
+        if (selected == null) return;
+
+        selected = null;
+        resultSent = false;
+        completedAtNanos = 0L;
+        carving.reset();
+    }
+
+    private List<CurseOption> computeVisible() {
+        List<CurseOption> shown = new ArrayList<>(CURSES.size());
+        for (CurseOption option : CURSES) {
+            if (option.curse().secret() && !holdsReagent(option.curse())) continue;
+            shown.add(option);
+        }
+        return shown;
+    }
+
+    private boolean holdsReagent(CurseInstance.Curse curse) {
+        Item reagent = curse.reagent();
+        if (reagent == null) return false;
+        if (menu.focusStack().is(reagent)) return true;
+        return minecraft != null && minecraft.player != null
+                && minecraft.player.getInventory().contains(stack -> stack.is(reagent));
+    }
+
+    private Identifier rune(CurseInstance.Curse curse) {
+        return runes.computeIfAbsent(curse, WritingDeskScreen::resolveRune);
+    }
+
+    private static Identifier resolveRune(CurseInstance.Curse curse) {
+        Identifier voxMagica = Identifier.fromNamespaceAndPath(PhrixPhrox.MOD_ID,
+                "textures/item/" + curse.path() + "_vm.png");
+        return Minecraft.getInstance().getResourceManager().getResource(voxMagica).isPresent()
+                ? voxMagica
+                : RUNE_TEMPLATE;
+    }
+
+    private void trackFinished() {
+        if (menu.state() == WritingDeskMenu.DeskState.FINISHED) {
+            if (finishedAtNanos == 0L) finishedAtNanos = System.nanoTime();
+        } else {
+            finishedAtNanos = 0L;
         }
     }
 
@@ -309,24 +368,15 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
                 : WritingDeskMenu.SLOT_INDEX_FOCUS;
     }
 
-    @Override
-    protected void extractSlot(GuiGraphicsExtractor graphics, Slot slot, int mouseX, int mouseY) {
-        if (menu.state() == WritingDeskMenu.DeskState.INSCRIBED
-                && slot == menu.slots.get(WritingDeskMenu.SLOT_INDEX_TABLET)) {
-            return;
-        }
-        super.extractSlot(graphics, slot, mouseX, mouseY);
-    }
-
     private void extractCurseList(GuiGraphicsExtractor graphics, int localX, int localY, int screenX, int screenY) {
         int wrapWidth = Math.round((BOX_X1 - 2 - ROW_TEXT_X) / ROW_SCALE);
         clampScroll();
 
         for (int row = 0; row < VISIBLE_ROWS; row++) {
             int index = scrollRow + row;
-            if (index >= CURSES.size()) break;
+            if (index >= visible.size()) break;
 
-            CurseOption option = CURSES.get(index);
+            CurseOption option = visible.get(index);
             int y0 = BOX_Y0 + row * BOX_PITCH;
             boolean hovered = selectable() && inBox(localX, localY, y0);
 
@@ -367,16 +417,16 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
         graphics.fill(TRACK_X0, y0, TRACK_X1, y0 + thumbHeight, THUMB_COLOR);
     }
 
-    private static int maxScroll() {
-        return Math.max(0, CURSES.size() - VISIBLE_ROWS);
+    private int maxScroll() {
+        return Math.max(0, visible.size() - VISIBLE_ROWS);
     }
 
-    private static int thumbHeight() {
+    private int thumbHeight() {
         int track = TRACK_Y1 - TRACK_Y0;
-        return Math.max(THUMB_MIN_HEIGHT, track * VISIBLE_ROWS / CURSES.size());
+        return Math.max(THUMB_MIN_HEIGHT, track * VISIBLE_ROWS / visible.size());
     }
 
-    private static int thumbTravel() {
+    private int thumbTravel() {
         return TRACK_Y1 - TRACK_Y0 - thumbHeight();
     }
 
@@ -447,7 +497,8 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
         drawFitted(graphics, fit, INSCRIPTION_X + INSCRIPTION_WIDTH / 2f, INSCRIPTION_Y, INSCRIPTION_HEIGHT, carvedChars);
     }
 
-    private void extractInscribedDefixion(GuiGraphicsExtractor graphics) {
+    private void extractInscribedDefixion(GuiGraphicsExtractor graphics, int localX, int localY,
+                                          int screenX, int screenY) {
         ItemStack defixion = menu.tabletStack();
         Integer curseType = defixion.get(PPData.CURSE_TYPE);
         if (curseType == null) return;
@@ -456,10 +507,19 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
         if (curse == null) return;
 
         extractInscription(graphics, inscriptionLines(curse, defixion.get(PPData.TARGET_NAME)), 1f);
-        carving.extractFinished(graphics, RUNE_TEMPLATE);
+        carving.extractFinished(graphics, rune(curse));
+
+        if (carving.inTablet(localX, localY)) {
+            List<FormattedCharSequence> tooltip = new ArrayList<>();
+            Defixion.appendCurseTooltip(defixion, line -> tooltip.add(line.getVisualOrderText()));
+            graphics.setTooltipForNextFrame(font, tooltip, screenX, screenY);
+        }
     }
 
     private void extractReadout(GuiGraphicsExtractor graphics) {
+        int alpha = readoutAlpha();
+        if (alpha == 0) return;
+
         ItemStack output = menu.outputStack();
         Integer curseType = output.get(PPData.CURSE_TYPE);
         if (curseType == null) return;
@@ -469,13 +529,44 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
 
         String target = output.get(PPData.TARGET_NAME);
         List<Component> source = List.of(
-                Component.translatable("tooltip.phrixphrox.inscribed_curse", Component.translatable(curse.nameKey())),
+                Component.translatable("tooltip.phrixphrox.inscribed_curse", Component.translatable(curse.nameKey()))
+                        .withStyle(ChatFormatting.BOLD),
                 Component.translatable("tooltip.phrixphrox.target", target != null
                         ? Component.literal(target)
-                        : Component.translatable("tooltip.phrixphrox.target.unbound")));
+                        : Component.translatable("tooltip.phrixphrox.target.unbound"))
+                        .withStyle(ChatFormatting.BOLD));
 
         FittedText fit = fitted(source, INSCRIPTION_WIDTH, READOUT_HEIGHT, READOUT_SCALE_MAX, 0f);
-        drawFitted(graphics, fit, INSCRIPTION_X + INSCRIPTION_WIDTH / 2f, READOUT_Y, READOUT_HEIGHT, 0);
+        drawReadout(graphics, fit, INSCRIPTION_X + INSCRIPTION_WIDTH / 2f, READOUT_Y, READOUT_HEIGHT,
+                ARGB.color(alpha, READOUT_COLOR));
+    }
+
+    private int readoutAlpha() {
+        if (finishedAtNanos == 0L) return 0;
+
+        long shown = System.nanoTime() - finishedAtNanos;
+        if (shown <= READOUT_HOLD_NANOS) return 255;
+
+        long faded = shown - READOUT_HOLD_NANOS;
+        if (faded >= READOUT_FADE_NANOS) return 0;
+        return Math.round(255f * (1f - faded / (float) READOUT_FADE_NANOS));
+    }
+
+    private void drawReadout(GuiGraphicsExtractor graphics, FittedText fit, float centerX, int boxY,
+                             int boxH, int color) {
+        float blockHeight = fit.lines().size() * font.lineHeight * fit.scale();
+        float startY = boxY + (boxH - blockHeight) / 2f;
+
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(centerX, startY);
+        graphics.pose().scale(fit.scale(), fit.scale());
+
+        for (int i = 0; i < fit.lines().size(); i++) {
+            Component line = Component.literal(fit.lines().get(i)).withStyle(ChatFormatting.BOLD);
+            graphics.text(font, line, -font.width(line) / 2, i * font.lineHeight, color, false);
+        }
+
+        graphics.pose().popMatrix();
     }
 
     private void drawFitted(GuiGraphicsExtractor graphics, FittedText fit, float centerX, int boxY, int boxH, int carvedChars) {
@@ -635,8 +726,8 @@ public class WritingDeskScreen extends AbstractContainerScreen<WritingDeskMenu> 
         if (selectable()) {
             for (int row = 0; row < VISIBLE_ROWS; row++) {
                 int index = scrollRow + row;
-                if (index < CURSES.size() && inBox(rx, ry, BOX_Y0 + row * BOX_PITCH)) {
-                    selectCurse(CURSES.get(index));
+                if (index < visible.size() && inBox(rx, ry, BOX_Y0 + row * BOX_PITCH)) {
+                    selectCurse(visible.get(index));
                     return true;
                 }
             }

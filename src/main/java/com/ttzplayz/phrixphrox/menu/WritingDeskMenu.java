@@ -21,6 +21,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -139,7 +140,7 @@ public class WritingDeskMenu extends AbstractContainerMenu {
 
     public boolean tabletSlotVisible() {
         return switch (state()) {
-            case UNEQUIPPED, INSCRIBED, FINISHED -> true;
+            case UNEQUIPPED, FINISHED -> true;
             default -> false;
         };
     }
@@ -245,7 +246,8 @@ public class WritingDeskMenu extends AbstractContainerMenu {
 
         int ordinal = buttonId - BUTTON_INSCRIBE_BASE;
         CurseInstance.Curse curse = CurseInstance.Curse.byOrdinal(ordinal);
-        if (curse == null) return false;
+        if (curse == null || !curse.selectable()) return false;
+        if (curse.secret() && !holdsReagent(player, curse)) return false;
 
         long defixionId = new Random().nextLong();
 
@@ -284,6 +286,12 @@ public class WritingDeskMenu extends AbstractContainerMenu {
         if (!player.getInventory().add(stack)) {
             player.drop(stack, false);
         }
+    }
+
+    public boolean holdsReagent(Player player, CurseInstance.Curse curse) {
+        Item reagent = curse.reagent();
+        if (reagent == null) return false;
+        return focusStack().is(reagent) || player.getInventory().contains(stack -> stack.is(reagent));
     }
 
     public static boolean isFocusable(ItemStack stack) {
